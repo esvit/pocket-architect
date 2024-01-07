@@ -1,0 +1,108 @@
+{
+  application: {
+    name: 'MyApp',
+    description: 'Test application',
+    initialVersion: '0.1.0',
+    version: '0.1.1',
+    architectureType: 'monolithic', // monolithic | microservices
+    tenancyType: 'multi'
+  },
+  layers: [
+    {
+      id: 1,
+      name: 'data',
+      configuration:{
+        databases: [
+          { id: 1, type: 'sequelize' },
+          { id: 2, type: 'mongoose' }
+        ]
+      }
+    },
+    { id: 2, name: 'business' },
+    { id: 3, name: 'presentation' }
+  ],
+  changelog: [
+    {
+      version: '0.0.1',
+      date: '2013-01-01',
+      changes: []
+    }
+  ],
+  parts: [ // if architectureType === 'monolithic' only one part
+    { id: 1, name: 'main', partType: 'service' },
+    { id: 2, name: 'webservice1', partType: 'service' },
+    { id: 3, parentId: 1, name: 'applications', partType: 'module' }
+  ],
+  entities: [
+    {
+      id: 1,
+      name: 'Application',
+      pluralName: 'Applications',
+      tableName: 'Applications',
+      partId: 3,
+      databaseId: 1,
+      fields: [
+        {
+          name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
+          options: { optionalCreate: true }
+        },
+        { name: 'Name', type: 'string', required: true, comment: 'User name' },
+        { name: 'Description', type: 'string', required: false },
+        { name: 'CreatedAt', type: 'DateTime|Date|string', dbType: 'date', options: { optionalCreate: true } },
+        { name: 'UpdatedAt', type: 'DateTime|Date|string', dbType: 'date', required: false },
+        { name: 'DeletedAt', type: 'DateTime|Date|string', dbType: 'date', required: false }
+      ],
+      relationships: [
+        { type: 'hasMany', entity: 'Entity', name: 'Entities' }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Entity',
+      pluralName: 'Entities',
+      tableName: 'Entities',
+      partId: 3,
+      databaseId: 1,
+      fields: [
+        {
+          name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
+          options: { optionalCreate: true }
+        },
+        {
+          name: 'ApplicationId', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true
+        },
+        { name: 'Name', type: 'string', required: true },
+        { name: 'CreatedAt', type: 'DateTime|Date|string', dbType: 'date', options: { optionalCreate: true } },
+        { name: 'UpdatedAt', type: 'DateTime|Date|string', dbType: 'date', required: false },
+        { name: 'DeletedAt', type: 'DateTime|Date|string', dbType: 'date', required: false }
+      ],
+      relationships: [
+        { type: 'belongsTo', entity: 'Application', name: 'Application' }
+      ]
+    },
+    {
+      id: 3,
+      name: 'ChangeLog',
+      pluralName: 'ChangeLogs',
+      tableName: 'ChangeLogs',
+      partId: 3,
+      databaseId: 1,
+      fields: [
+        {
+          name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
+          options: { optionalCreate: true }
+        },
+        {
+          name: 'ApplicationId', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true
+        },
+        { name: 'Name', type: 'string', required: true },
+        { name: 'CreatedAt', type: 'DateTime|Date|string', dbType: 'date', options: { optionalCreate: true } },
+        { name: 'UpdatedAt', type: 'DateTime|Date|string', dbType: 'date', required: false },
+        { name: 'DeletedAt', type: 'DateTime|Date|string', dbType: 'date', required: false }
+      ],
+      relationships: [
+        { type: 'belongsTo', entity: 'Application', name: 'Application' }
+      ]
+    }
+  ]
+}
