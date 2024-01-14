@@ -1,69 +1,40 @@
 {
-  application: {
+  metadata: {
     name: 'MyApp',
     description: 'Test application',
     initialVersion: '0.1.0',
     version: '0.1.1',
-    architectureType: 'monolithic', // monolithic | microservices
-    tenancyType: 'multi'
+    architectureType: 'monolith',
+    tenancyType: 'multitenants'
   },
-  layers: [
-    {
-      id: 1,
-      name: 'data',
-      configuration:{
-        databases: [
-          { id: 1, type: 'sequelize' },
-          { id: 2, type: 'mongoose' }
-        ]
-      }
-    },
-    { id: 2, name: 'business' },
-    { id: 3, name: 'presentation' }
+  endpoints: [
+    { operationName: 'getApplications', entityId: 1, tag: 'Applications', summary: 'Get list of applications', description: 'No description', partId: 3, method: 'get', url: '/users' }
   ],
-  changelog: [
+  parts: [
+    { name: 'main', type: 'service' },
+    { name: 'webservice1', type: 'service' },
+    { name: 'applications', type: 'module', parent: 'main' },
     {
-      version: '0.0.1',
-      date: '2013-01-01',
-      changes: []
-    }
-  ],
-  parts: [ // if architectureType === 'monolithic' only one part
-    { id: 1, name: 'main', partType: 'service' },
-    { id: 2, name: 'webservice1', partType: 'service' },
-    { id: 3, parentId: 1, name: 'applications', partType: 'module' }
-  ],
-  entities: [
-    {
-      id: 1,
-      name: 'Application',
-      pluralName: 'Applications',
-      tableName: 'Applications',
-      partId: 3,
-      databaseId: 1,
-      fields: [
-        {
-          name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
-          options: { optionalCreate: true }
-        },
-        { name: 'Name', type: 'string', required: true, comment: 'User name' },
-        { name: 'Description', type: 'string', required: false },
-        { name: 'CreatedAt', type: 'DateTime|Date|string', dbType: 'date', options: { optionalCreate: true } },
-        { name: 'UpdatedAt', type: 'DateTime|Date|string', dbType: 'date', required: false },
-        { name: 'DeletedAt', type: 'DateTime|Date|string', dbType: 'date', required: false }
+      name: 'Metadata', type: 'entity', parent: "applications",
+      attributes: [
+        { name: 'name', type: 'string', mandatory: true, description: 'User name' },
+        { name: 'initialVersion', type: 'string', mandatory: true },
+        { name: 'version', type: 'string', mandatory: true },
+        { name: 'description', type: 'string' },
+        { name: 'architectureType', type: 'enum', enum: ['monolithic', 'multiservices'], mandatory: true },
+        { name: 'tenancyType', type: 'enum', enum: ['singleTenant', 'multiTenants'], mandatory: true }
       ],
       relationships: [
-        { type: 'hasMany', entity: 'Entity', name: 'Entities' }
+        { type: 'many', entity: 'Entity', name: 'Entities' }
       ]
     },
     {
-      id: 2,
-      name: 'Entity',
+      name: 'Entity', type: 'valueObject',
       pluralName: 'Entities',
       tableName: 'Entities',
       partId: 3,
       databaseId: 1,
-      fields: [
+      attributes: [
         {
           name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
           options: { optionalCreate: true }
@@ -72,22 +43,21 @@
           name: 'ApplicationId', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true
         },
         { name: 'Name', type: 'string', required: true },
-        { name: 'CreatedAt', type: 'DateTime|Date|string', dbType: 'date', options: { optionalCreate: true } },
-        { name: 'UpdatedAt', type: 'DateTime|Date|string', dbType: 'date', required: false },
-        { name: 'DeletedAt', type: 'DateTime|Date|string', dbType: 'date', required: false }
+        { name: 'CreatedAt', type: 'date', dbType: 'date', options: { optionalCreate: true } },
+        { name: 'UpdatedAt', type: 'date', dbType: 'date', required: false },
+        { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
       ],
       relationships: [
-        { type: 'belongsTo', entity: 'Application', name: 'Application' }
+        { type: 'one', entity: 'Application', name: 'Application' }
       ]
     },
     {
-      id: 3,
-      name: 'ChangeLog',
+      name: 'ChangeLog', type: 'entity',
       pluralName: 'ChangeLogs',
-      tableName: 'ChangeLogs',
+      tableName: 'ChangeLogs2',
       partId: 3,
       databaseId: 1,
-      fields: [
+      attributes: [
         {
           name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
           options: { optionalCreate: true }
@@ -96,12 +66,12 @@
           name: 'ApplicationId', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true
         },
         { name: 'Name', type: 'string', required: true },
-        { name: 'CreatedAt', type: 'DateTime|Date|string', dbType: 'date', options: { optionalCreate: true } },
-        { name: 'UpdatedAt', type: 'DateTime|Date|string', dbType: 'date', required: false },
-        { name: 'DeletedAt', type: 'DateTime|Date|string', dbType: 'date', required: false }
+        { name: 'CreatedAt', type: 'date', dbType: 'date', options: { optionalCreate: true } },
+        { name: 'UpdatedAt', type: 'date', dbType: 'date', required: false },
+        { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
       ],
       relationships: [
-        { type: 'belongsTo', entity: 'Application', name: 'Application' }
+        { type: 'one', entity: 'Application', name: 'Application' }
       ]
     }
   ]
