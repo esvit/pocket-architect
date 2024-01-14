@@ -70,8 +70,8 @@ abstract class BaseTemplateGenerator {
 
   protected async writeFiles(files:ContentFile[], outputDir:string):Promise<void> {
     for (const file of files) {
-      const fullpath = `${outputDir}/${file.path}`
-      this.logger.info(`Generated: ${fullpath} (${file.content.length} bytes)`);
+      const fullpath = path.resolve(`${outputDir}/${file.path}`);
+      this.logger.info(`Generated: ${path.relative(outputDir, fullpath)} (${file.content.length} bytes)`);
       await fs.mkdir(path.dirname(fullpath), { recursive: true });
       await fs.writeFile(fullpath, file.content);
     }

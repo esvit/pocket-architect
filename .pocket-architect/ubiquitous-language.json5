@@ -1,0 +1,38 @@
+// https://github.com/dev-cycles/contextive/tree/main
+// https://mvcds.github.io/hubi/#domain-file
+// https://github.com/mvcds/hubi?tab=readme-ov-file
+// https://martinfowler.com/bliki/UbiquitousLanguage.html
+// https://medium.com/ingeniouslysimple/constructing-your-ubiquitous-language-7a57e36e3e82
+// https://medium.com/@philippkostyra/how-ubiquitous-language-can-help-you-write-better-prompts-826f55c50dcd
+{
+  contexts: [
+    {
+      name: 'Cargo',
+      visionStatement: 'To manage the routing of cargo through transportation legs',
+      terms: [
+        {
+          name: 'Demo Multiline Options',
+          definition: 'This definition has multiple lines with a linebreak achieved using the literal block indicator, a single newline, and two spaces at the end of the first line'
+        }
+      ]
+    },
+    {
+      name: 'Billing',
+      visionStatement: 'Compute and levy charges for shipping',
+      paths: [
+        {
+          name: 'BillingDemo',
+          terms: [
+            {
+              name: 'Policy',
+              definition: 'A set of payment rules that defines when invoices are due, and actions to take when unpaid.',
+              examples: [
+                'The billing policy is to send to collections after 90 days in arrears.'
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

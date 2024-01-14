@@ -1,6 +1,6 @@
 {
   "name": "@pocket-architect/generator-koa",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -26,7 +26,7 @@
   "author": "Vitalii Savchuk <esvit666@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@pocket-architect/base-generator": "^0.1.9",
+    "@pocket-architect/base-generator": "^0.1.10",
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {
