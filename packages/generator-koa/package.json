@@ -11,7 +11,7 @@
     "templates/"
   ],
   "scripts": {
-    "test-generate": "ts-node src/index.ts -o dist ../../json/pocket.json5",
+    "test-generate": "ts-node src/index.ts -o dist ../../.pocket-architect.json5",
     "prepublishOnly": "npm run build && npm version patch",
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
