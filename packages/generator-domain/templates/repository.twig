@@ -1,0 +1,7 @@
+{%- set interfaceName = 'I' + entity.repositoryName -%}
+
+export interface {{interfaceName}} {
+  {%- for attribute in entity.attributes %}
+  {{ attribute.name }}{% if not attribute.mandatory %}?{% endif%}: {{ attribute.jsType }};
+  {%- endfor %}
+}
