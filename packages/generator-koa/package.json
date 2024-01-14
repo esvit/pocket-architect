@@ -1,6 +1,6 @@
 {
   "name": "@pocket-architect/generator-koa",
-  "version": "0.1.0",
+  "version": "0.1.7",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -11,6 +11,7 @@
     "templates/"
   ],
   "scripts": {
+    "test-generate": "ts-node src/index.ts -o dist ../../json/pocket.json5",
     "prepublishOnly": "npm run build && npm version patch",
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
@@ -25,7 +26,7 @@
   "author": "Vitalii Savchuk <esvit666@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@pocket-architect/base-generator": "^0.1.5",
+    "@pocket-architect/base-generator": "^0.1.9",
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {

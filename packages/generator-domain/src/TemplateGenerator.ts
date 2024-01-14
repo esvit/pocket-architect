@@ -53,7 +53,7 @@ class TemplateGenerator extends BaseTemplateGenerator {
 
     // models
     for (const entity of project.parts) {
-      files.push(...await this.generatePart(entity, 'src'));
+      files.push(...await this.generatePart(entity, '.'));
     }
     return files;
   }

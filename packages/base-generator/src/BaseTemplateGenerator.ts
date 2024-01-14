@@ -1,3 +1,4 @@
+import pino from 'pino';
 import { program, Command } from 'commander';
 import {constants, promises as fs} from 'fs';
 import path from 'path';
@@ -42,11 +43,22 @@ export function getCommander(name:string, generator:BaseTemplateGenerator):Comma
 export default
 abstract class BaseTemplateGenerator {
   protected options:TemplateGeneratorOptions = {};
+  protected logger:pino.Logger;
 
   abstract prepareFiles(project:PocketArchitect):Promise<ContentFile[]>;
 
   setOptions(options:TemplateGeneratorOptions):void {
     this.options = options;
+
+    this.logger = pino({
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: true
+        }
+      },
+      level: 'info'
+    });
   }
 
   public async generate(inputFile:string, outputDir:string):Promise<ContentFile[]> {
@@ -57,9 +69,9 @@ abstract class BaseTemplateGenerator {
   }
 
   protected async writeFiles(files:ContentFile[], outputDir:string):Promise<void> {
-    await fs.rm(outputDir, { recursive: true, force: true });
     for (const file of files) {
       const fullpath = `${outputDir}/${file.path}`
+      this.logger.info(`Generated: ${fullpath} (${file.content.length} bytes)`);
       await fs.mkdir(path.dirname(fullpath), { recursive: true });
       await fs.writeFile(fullpath, file.content);
     }
