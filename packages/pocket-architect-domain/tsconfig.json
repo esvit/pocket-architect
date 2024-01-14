@@ -1,18 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "lib": [
-      "es2017",
-      "es2018.asynciterable"
-    ],
-    "moduleResolution": "node",
+    "target": "ES2021",
+    "module": "Node16",
+    "lib": ["es2017"],
     "rootDir": "./src",
     "outDir": "build",
     "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "alwaysStrict": true,
-    "declaration": true,
     "sourceMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -23,8 +18,9 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "strictNullChecks": false,
+    "skipLibCheck": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true
+    "resolveJsonModule": true
   },
-  "include": ["**/*", "__tests__/**/*"]
+  "include": ["src/**/*", "__tests__/**/*"]
 }

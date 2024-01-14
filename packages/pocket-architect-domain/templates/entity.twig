@@ -1,0 +1,26 @@
+{%- set interfaceName = 'I' + entity.name -%}
+import { Entity } from 'pocket-architect-core';
+
+{%- for attribute in entity.attributes %}
+{%- if attribute.type === 'enum' %}
+export enum {{attribute.enumName}} {
+  {%- for value in attribute.enum %}
+  {{value | capitalize}} = '{{value}}',
+  {%- endfor %}
+}
+{% endif -%}
+{%- endfor %}
+
+export interface {{interfaceName}} {
+  {%- for attribute in entity.attributes %}
+  {{ attribute.name }}{% if not attribute.mandatory %}?{% endif%}: {{ attribute.jsType }};
+  {%- endfor %}
+}
+
+export
+class {{entity.name}} extends Entity<{{interfaceName}}> {
+  public static create(props: {{interfaceName}}): {{entity.name}} {
+    const entity = new {{entity.name}}(props);
+    return entity;
+  }
+}

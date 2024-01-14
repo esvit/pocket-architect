@@ -1,39 +1,24 @@
-import {promises} from 'fs';
-import json5 from 'json5';
-import { Reviver, Jsonizer } from '@badcafe/jsonizer';
-import Application from "./Application";
-import Layer from "./Layer";
-import Entity from "./Entity";
-import ApplicationPart from "./ApplicationPart";
+import nunjucks from 'nunjucks';
+import ProjectJson from './json/ProjectJson';
+import { Project } from './domain/Project';
+import { capitalize } from './helpers/string';
 
 export default
-@Reviver<PocketArchitect>({
-  application: Application,
-  layers: {
-    '*': Layer
-  },
-  entities: {
-    '*': Entity
-  },
-  parts: {
-    '*': ApplicationPart
-  },
-  '.': Jsonizer.Self.assign(PocketArchitect)
-})
 class PocketArchitect {
-  readonly application: Application = null;
-  readonly layers: Layer[] = [];
-  readonly entities: Entity[] = [];
-  readonly parts: ApplicationPart[] = [];
+  static async load(path: string): Promise<Project> {
+    const project = await ProjectJson.load(path);
 
-  static async load(path: string): Promise<PocketArchitect> {
-    const content = await promises.readFile(path, 'utf-8');
-    const jsonData = json5.parse(content);
-    const reviver = Reviver.get(PocketArchitect);
-    return JSON.parse(JSON.stringify(jsonData), reviver);
+    return project;
   }
 
-  toJson(): string {
-    return JSON.stringify(this);
+  static async write(path: string, project: Project): Promise<void> {
+    return ProjectJson.write(path, project);
+  }
+
+  static getTemplateEngine(templateRoot:string) {
+    const loader = new nunjucks.FileSystemLoader(templateRoot);
+    const env = new nunjucks.Environment(loader);
+    env.addFilter('capitalize', capitalize);
+    return env;
   }
 }
