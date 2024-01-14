@@ -1,0 +1,51 @@
+import { Tenant } from '../models/Tenant';
+import { getByFilter, saveItem, deleteItem } from '../helpers/entity';
+import {{entity.name}} from '../models/{{entity.name}}';
+
+export default
+class {{ entity.pluralName }}Repo {
+  tenant: Tenant;
+  currentUser: any;
+
+  constructor({ tenant, currentUser }) {
+    this.tenant = tenant;
+    this.currentUser = currentUser;
+  }
+
+  async get{{entity.pluralName}}ByFilter(params) {
+    const where:any = { TenantId: this.tenant.Id };
+    const res = await getByFilter({{name}}, {
+      params: {
+        where
+      },
+      queryParams: []
+    })(params);
+    return res;
+  }
+
+  save{{entity.name}}(id, {
+  {% for attribute in entity.attributes %}
+    {%- if not attribute.primaryKey %}
+    {{attribute.name}},
+    {% endif -%}
+  {% endfor %}
+  }) {
+    const data = {
+  {% for attribute in entity.attributes %}
+    {%- if not attribute.primaryKey %}
+    {{attribute.name}},
+    {% endif -%}
+  {% endfor %}
+    };
+    return saveItem({{entity.name}}, this.currentUser, {
+      fields: Object.keys(data),
+      params: { TenantId: this.tenant.Id }
+    }, 'Exchange source not found')(id, data);
+  }
+
+  delete{{entity.name}}(id) {
+    return deleteItem({{name}}, {
+      params: { where: { Id: id, TenantId: this.tenant.Id } }
+    }, 'Exchange source not found')();
+  }
+}

@@ -1,0 +1,8 @@
+{% macro attrType(attribute) -%}
+DataTypes.
+{%- if attribute.dbType === 'bigint' -%}BIGINT
+{%- elif attribute.dbType === 'integer' or attribute.type === 'number' -%}INTEGER
+{%- elif attribute.dbType === 'string' or attribute.type === 'string' -%}STRING
+{%- elif attribute.dbType === 'date' or attribute.type === 'datetime' -%}DATE
+{%- endif %}{%- if attribute.length %}({ length: {{ attribute.length }} }){% endif -%}
+{% endmacro %}

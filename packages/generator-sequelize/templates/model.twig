@@ -1,0 +1,28 @@
+import { DateTime } from 'luxon';
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
+import db from '../lib/db';
+{% for relationship in entity.relationships %}
+// import {{relationship.entity}} from './{{relationship.entity}}';
+{%- endfor %}
+export
+class {{entity.name}} extends Model<InferAttributes<{{entity.name}}>, InferCreationAttributes<{{entity.name}}>> {
+{%- for attribute in entity.attributes %}{% set isOptional = attribute.options and attribute.options.optionalCreate %}
+  {{ attribute.name }}{% if not attribute.required %}?{% endif %}: {% if isOptional %}CreationOptional<{% endif %}{{ attribute.type }}{% if isOptional %}>{% endif %};
+{%- endfor %}
+}
+{% from 'dbType.twig' import attrType %}
+const model = {{entity.name}}.init(
+  {
+    {%- for attribute in entity.attributes %}
+    {{ attribute.name }}: { {% if attribute.fieldName and attribute.name != attribute.fieldName %}field: '{{ attribute.fieldName }}', {% endif %}{% if attribute.defaultValue %}defaultValue: '{{ attribute.defaultValue }}', {% endif %}{% if attribute.primaryKey %}primaryKey: true, {% endif %}{% if attribute.autoincrement %}autoincrement: true, {% endif %}type: {{ attrType(attribute) }}, allowNull: {{ not not attribute.nullable }} },{% if attribute.comment %} // {{attribute.comment}}{% endif %}
+    {%- endfor %}
+  },
+  {
+    sequelize: db,
+    tableName: '{{ entity.tableName }}'
+  }
+);
+{% for relationship in entity.relationships %}
+// model.{{relationship.type}}({{relationship.entity}}, { as: '{{relationship.name}}' });
+{%- endfor %}
+export default model;

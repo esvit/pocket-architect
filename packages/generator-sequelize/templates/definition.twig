@@ -1,0 +1,12 @@
+export const {{name}} = {
+  Id: Joi.number().integer().positive(),
+  Title: Joi.string(),
+  Code: Joi.string(),
+  Symbol: Joi.string().allow(null, ''),
+  IsDefault: Joi.number().allow(),
+  IsCryptoCurrency: Joi.boolean(),
+  Precision: Joi.number().allow(null)
+  {%- for attribute in attributes %}{% set isOptional = attribute.options and attribute.options.optionalCreate %}
+    {{ attribute.name }}: Joi.{{ attribute.type }}(){% if isOptional %}.allow(null){% endif %},
+  {%- endfor %}
+};
