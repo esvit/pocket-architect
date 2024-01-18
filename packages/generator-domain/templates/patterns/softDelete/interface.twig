@@ -1,0 +1,8 @@
+interface IPatternSoftDelete {
+    deletedAt: Date | null;
+}
+
+interface IPatternSoftDeleteRepo {
+    deleteItems(ids: string[]): Promise<number>;
+    restoreItems(ids: string[]): Promise<number>;
+}

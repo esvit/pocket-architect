@@ -2,7 +2,7 @@ import nunjucks from 'nunjucks';
 import pluralize from 'pluralize';
 import ProjectJson from './json/ProjectJson';
 import { Project } from './domain/Project';
-import { capitalize } from './helpers/string';
+import {capitalize, variableCase} from './helpers/string';
 
 export default
 class PocketArchitect {
@@ -20,6 +20,7 @@ class PocketArchitect {
     const loader = new nunjucks.FileSystemLoader(templateRoot);
     const env = new nunjucks.Environment(loader);
     env.addFilter('capitalize', capitalize);
+    env.addFilter('variableCase', variableCase);
     env.addFilter('pluralize', pluralize);
     return env;
   }

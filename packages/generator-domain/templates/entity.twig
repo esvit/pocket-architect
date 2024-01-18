@@ -1,26 +1,11 @@
-{%- set interfaceName = 'I' + entity.name -%}
-import { Entity } from 'pocket-architect-core';
-
-{%- for attribute in entity.attributes %}
-{%- if attribute.type === 'enum' %}
-export enum {{attribute.enumName}} {
-  {%- for value in attribute.enum %}
-  {{value | capitalize}} = '{{value}}',
-  {%- endfor %}
-}
-{% endif -%}
-{%- endfor %}
-
-export interface {{interfaceName}} {
-  {%- for attribute in entity.attributes %}
-  {{ attribute.name }}{% if not attribute.mandatory %}?{% endif%}: {{ attribute.jsType }};
-  {%- endfor %}
-}
-
+{% from "partials/macro.twig" import dependencies %}
+import { Entity } from '@pocket-architect/core';
+{{ dependencies(entity.dependencies, path) }}
 export
-class {{entity.name}} extends Entity<{{interfaceName}}> {
-  public static create(props: {{interfaceName}}): {{entity.name}} {
+class {{entity.name}} extends Entity<{{entity.interface.name}}> {
+  public static create(props: {{entity.interface.name}}): {{entity.name}} {
     const entity = new {{entity.name}}(props);
+    // TODO: Another properties here
     return entity;
   }
 }

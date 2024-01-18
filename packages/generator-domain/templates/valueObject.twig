@@ -1,16 +1,13 @@
-{%- set interfaceName = 'I' + valueObject.name -%}
-import { ValueObject } from 'pocket-architect-core';
+{% from "partials/macro.twig" import interfaceAttributes %}
+import { ValueObject } from '@pocket-architect/core';
 
-export interface {{interfaceName}} {
-  {%- for attribute in valueObject.attributes %}
-  {{ attribute.name }}{% if not attribute.mandatory %}?{% endif%}: {{ attribute.type }};
-  {%- endfor %}
+export interface {{valueObject.interface.name}} {
+{{- interfaceAttributes(valueObject.attributes)}}
 }
 
 export
-class {{valueObject.name}} extends ValueObject<{{interfaceName}}> {
-  public static create(props: {{interfaceName}}): {{valueObject.name}} {
-    const entity = new {{valueObject.name}}(props);
-    return entity;
+class {{valueObject.name}} extends ValueObject<{{valueObject.interface.name}}> {
+  public static create(props: {{valueObject.interface.name}}): {{valueObject.name}} {
+    return new {{valueObject.name}}(props);
   }
 }

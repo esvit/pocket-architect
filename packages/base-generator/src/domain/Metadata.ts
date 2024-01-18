@@ -21,11 +21,15 @@ export interface IMetadata {
 
 export
 class Metadata extends Entity<IMetadata> {
+  static create(props: IMetadata): Metadata {
+    return new Metadata(props);
+  }
+
   get name(): string {
     return this.props.name;
   }
 
-  static create(props: IMetadata): Metadata {
-    return new Metadata(props);
+  get architectureType(): ArchitectureType {
+    return this.props.architectureType;
   }
 }

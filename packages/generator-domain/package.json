@@ -26,7 +26,7 @@
   "author": "Vitalii Savchuk <esvit666@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@pocket-architect/base-generator": "^0.1.10",
+    "@pocket-architect/base-generator": "^0.1.39",
     "commander": "^11.1.0",
     "nunjucks": "^3.2.4"
   },

@@ -1,0 +1,5 @@
+{%- from "partials/macro.twig" import interfaceAttributes, enums -%}
+{{ enums(interface.attributes) -}}
+export interface {{interface.name}} {
+{{- interfaceAttributes(entity.attributes) }}
+}

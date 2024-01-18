@@ -1,0 +1,11 @@
+{% from "partials/macro.twig" import dependencies %}{{ dependencies(service.dependencies, path) }}
+export
+class {{entity.service.name}} {
+  protected {{ entity.repository.name|variableCase }}: I{{ entity.repository.name }};
+
+  constructor({ {{ entity.repository.name }} }) {
+    this.{{ entity.repository.name|variableCase }} = {{ entity.repository.name }};
+
+    console.info({{entity.name}});
+  }
+}

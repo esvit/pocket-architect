@@ -1,7 +1,5 @@
-{%- set interfaceName = 'I' + entity.repositoryName -%}
-
-export interface {{interfaceName}} {
-  {%- for attribute in entity.attributes %}
-  {{ attribute.name }}{% if not attribute.mandatory %}?{% endif%}: {{ attribute.jsType }};
-  {%- endfor %}
+{% from "partials/macro.twig" import interfaceAttributes, enums %}
+{{- enums(repository.attributes) }}
+export interface {{repository.interface.name}} {
+{{interfaceAttributes(repository.attributes)}}
 }

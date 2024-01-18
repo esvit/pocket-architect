@@ -1,0 +1,21 @@
+{%- macro interfaceAttributes(attributes) -%}
+  {%- for attribute in attributes %}
+  {{ attribute.name }}{% if not attribute.mandatory %}?{% endif%}: {{ attribute.jsType }};
+  {%- endfor %}
+{%- endmacro -%}
+{%- macro enums(attributes) -%}
+{%- for attribute in attributes %}
+{%- if attribute.type === 'enum' %}
+export enum {{attribute.enumName}} {
+  {%- for value in attribute.enum %}
+  {{value | capitalize}} = '{{value}}',
+  {%- endfor %}
+}
+{% endif -%}
+{%- endfor %}
+{%- endmacro -%}
+{%- macro dependencies(dependencies, path) -%}
+{% for dependency in dependencies -%}
+import { {% for name in dependency.names %}{{name}}{% if not loop.last %}, {% endif %}{% endfor %} } from '{{ dependency.part|dependencyPath(path) }}';
+{% endfor %}
+{%- endmacro -%}

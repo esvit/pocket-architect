@@ -1,6 +1,6 @@
 {
   "name": "@pocket-architect/base-generator",
-  "version": "0.1.10",
+  "version": "0.1.39",
   "description": "",
   "main": "build/index.js",
   "scripts": {

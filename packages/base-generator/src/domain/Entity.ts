@@ -1,48 +1,53 @@
-import pluralize from 'pluralize';
-import { Entity as EntityCore } from '@pocket-architect/core';
-import { capitalize } from '../helpers/string';
 import { Attribute } from './Attribute';
+import {Interface} from "./Interface";
+import {AbstractProject} from "./interfaces/IProject";
+import { Layer, LayerType} from './Layer';
+import { ValueObject, IValueObject } from './ValueObject';
+import {Repository} from "./Repository";
+import {Service} from "./Service";
 
-export interface IEntity {
-  parent?: string;
-  name: string;
-  type: string;
-  description?:string;
-
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  attributes?: any[];
+export interface IEntity extends IValueObject {
 }
 
-export class Entity extends EntityCore<IEntity> {
-  protected _attributes: Attribute[] = [];
+export class Entity extends ValueObject {
+  protected _repository: Repository = null;
+  protected _service: Service = null;
 
-  public static create(props: IEntity): Entity {
+  public static create(props: IEntity, project: AbstractProject): Entity {
     const entity = new Entity(props);
     entity._attributes = (props.attributes || []).map((i) => Attribute.create(i));
-    return new Entity(props);
+    entity._project = project;
+    entity._interface = Interface.createFromPart(entity);
+    entity._repository = Repository.createFromEntity(entity);
+    entity._service = Service.createFromEntity(entity, entity._repository);
+    return entity;
   }
 
-  get name(): string {
-    return this.props.name;
+  set domain(domain: Layer) {
+    this._domain = domain;
+    this._interface.domain = domain;
+    this._service.domain = domain;
+    this._repository.domain = domain;
   }
 
-  get type(): string {
-    return this.props.type;
+  set context(context: Layer) {
+    this._context = context;
+    this._interface.context = context;
+    this._service.context = context;
+    this._repository.context = context;
   }
 
-  get parts() {
-    return [];
+  get repository(): Repository {
+    return this._repository;
   }
 
-  get pluralName(): string {
-    return pluralize(this.props.name);
+  get service(): Service {
+    return this._service;
   }
 
-  get repositoryName(): string {
-    return `${capitalize(this.pluralName)}Repo`;
-  }
-
-  get attributes(): Attribute[] {
-    return this._attributes;
+  get type(): LayerType {
+    return LayerType.Entity;
   }
 }
+
+Layer.registerType(LayerType.Entity, Entity);

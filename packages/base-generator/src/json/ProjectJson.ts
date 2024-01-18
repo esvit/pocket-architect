@@ -3,21 +3,21 @@ import json5 from 'json5';
 import { Reviver, Jsonizer } from '@badcafe/jsonizer';
 import { validator } from '@exodus/schemasafe';
 import jsonSchema from './JsonSchema';
-import ApplicationPart from './ApplicationPart';
+import Layer from './Layer';
 import Metadata from './Metadata';
 import { Project } from '../domain/Project';
 
 export default
 @Reviver<ProjectJson>({
   application: Metadata,
-  parts: {
-    '*': ApplicationPart
+  layers: {
+    '*': Layer
   },
   '.': Jsonizer.Self.assign(ProjectJson)
 })
 class ProjectJson {
   readonly application: Metadata = null;
-  readonly parts: ApplicationPart[] = [];
+  readonly layers: Layer[] = [];
 
   static async load(path: string): Promise<Project> {
     const content = await promises.readFile(path, 'utf-8');

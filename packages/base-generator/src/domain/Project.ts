@@ -1,31 +1,17 @@
-import { AggregateRoot } from '@pocket-architect/core';
-import { IMetadata, Metadata } from './Metadata';
-import { IApplicationPart, ApplicationPart } from './ApplicationPart';
+import { Metadata } from './Metadata';
+import { ILayer, Layer } from './Layer';
 import { plainListToTree } from '../helpers/tree';
+import {AbstractProject, IProject} from './interfaces/IProject';
 
-export interface IProject {
-  metadata: IMetadata;
-  parts: IApplicationPart[];
-}
+export { IProject };
 
 export
-class Project extends AggregateRoot<IProject> {
-  private _metadata: Metadata = null;
-  private _parts: ApplicationPart[] = [];
-
+class Project extends AbstractProject {
   public static create(props: IProject): Project {
     const project = new Project(props);
     project._metadata = Metadata.create(props.metadata);
-    project._parts = plainListToTree<IApplicationPart>(props.parts, 'parts')
-      .map((i) => ApplicationPart.create(i));
+    project._layers = plainListToTree<ILayer>(props.layers, 'layers')
+      .map((i) => Layer.create(i, project));
     return project;
-  }
-
-  get metadata(): Metadata {
-    return this._metadata;
-  }
-
-  get parts(): ApplicationPart[] {
-    return this._parts;
   }
 }
