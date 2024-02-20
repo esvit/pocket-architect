@@ -2,17 +2,16 @@
 import { Attribute } from './Attribute';
 import { Interface, IInterface } from "./Interface";
 import { AbstractProject } from "./interfaces/IProject";
-import { Layer, LayerType } from './Layer';
+import {Layer, LayerId, LayerType} from './Layer';
 
 export interface IValueObject extends IInterface {
 }
 
 export class ValueObject extends Interface {
   protected _interface: Interface = null;
-
   public static create(props: IValueObject, project: AbstractProject): ValueObject {
-    const entity = new ValueObject(props);
-    entity._attributes = (props.attributes || []).map((i) => Attribute.create(i));
+    const entity = new ValueObject(props, new LayerId(props.id));
+    entity._attributes = (props.attributes || []).map((i) => Attribute.create(i, entity));
     entity._interface = Interface.createFromPart(entity);
     entity._project = project;
     return entity;
@@ -23,9 +22,9 @@ export class ValueObject extends Interface {
     this._interface.domain = domain;
   }
 
-  set context(context: Layer) {
-    this._context = context;
-    this._interface.context = context;
+  set boundedContext(boundedContext: Layer) {
+    this._boundedContext = boundedContext;
+    this._interface.boundedContext = boundedContext;
   }
 
   get interface(): Interface {

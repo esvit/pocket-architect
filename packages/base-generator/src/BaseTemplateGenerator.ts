@@ -27,7 +27,7 @@ export function getCommander(name:string, generator:BaseTemplateGenerator):Comma
       try {
         await fs.access(str, constants.R_OK);
       } catch (err) {
-        throw new Error(`File "${this.inputFile}" does not exist or is not readable`);
+        throw new Error(`File "${str}" does not exist or is not readable`);
       }
       const { outputDir } = options;
       try {

@@ -1,4 +1,4 @@
-import { AggregateRoot } from '@pocket-architect/core';
+import { AggregateRoot, EntityId } from '@pocket-architect/core';
 import {IMetadata, Metadata} from '../Metadata';
 import {Layer, ILayer} from '../Layer';
 
@@ -7,7 +7,9 @@ export interface IProject {
   layers: ILayer[];
 }
 
-export class AbstractProject extends AggregateRoot<IProject> {
+export class ProjectId extends EntityId {}
+
+export class AbstractProject extends AggregateRoot<IProject, ProjectId> {
   protected _metadata: Metadata = null;
   protected _layers: Layer[] = [];
 

@@ -9,13 +9,14 @@ export class Service extends Interface {
 
   public static createFromEntity(entity: Entity, repository: Repository): Service {
     const repo = new Service({
+      id: `service-${entity.id}`,
       name: `${entity.name}Service`,
       type: LayerType.Service
     });
     repo._entity = entity;
     repo._repository = repository;
     repo._domain = entity.domain;
-    repo._context = entity.context;
+    repo._boundedContext = entity.boundedContext;
     repo.addDependency(entity, [entity.name]);
     repo.addDependency(repository, [repository.interface.name]);
     return repo;

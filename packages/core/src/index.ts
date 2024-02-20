@@ -1,4 +1,5 @@
-import { Entity, EntityId } from './Entity';
+import { Entity } from './Entity';
+import { EntityId } from './EntityId';
 import { ValueObject } from './ValueObject';
 import { AggregateRoot } from './AggregateRoot';
 

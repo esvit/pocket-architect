@@ -4,18 +4,18 @@
     description: 'Test application',
     initialVersion: '0.1.0',
     version: '0.1.1',
-    architectureType: 'monolith',
+    architectureType: 'multiservices',
     tenancyType: 'multitenants'
   },
   endpoints: [
     { operationName: 'getApplications', entityId: 1, tag: 'Applications', summary: 'Get list of applications', description: 'No description', partId: 3, method: 'get', url: '/users' }
   ],
-  parts: [
-    { name: 'main', type: 'service' },
-    { name: 'webservice1', type: 'service' },
-    { name: 'applications', type: 'module', parent: 'main' },
+  layers: [
+    { id: "1", name: 'main', type: 'domain' },
+    { id: "2", name: 'SecondDomain', type: 'domain' },
+    { id: "3", name: 'applications', type: 'bounded-context', parent: 'main' },
     {
-      name: 'Metadata', type: 'entity', parent: "applications",
+      id: "4", name: 'Metadata', type: 'entity', parent: "applications",
       attributes: [
         { name: 'name', type: 'string', mandatory: true, description: 'User name' },
         { name: 'initialVersion', type: 'string', mandatory: true },
@@ -25,14 +25,14 @@
         { name: 'tenancyType', type: 'enum', enum: ['singleTenant', 'multiTenants'], mandatory: true }
       ],
       methods: [
-        { name: 'getApplications', type: 'query', description: 'Get list of applications', parameters: [], returns: 'Application[]' }
+        { name: 'getApplications', type: 'query', description: 'Get list of applications', parameters: [], return: { type: 'string' } }
       ],
-      relationships: [
-        { type: 'many', entity: 'Entity', name: 'Entities' }
+      relations: [
+        { type: 'n:n', entity: 'Entity', name: 'Entities' }
       ]
     },
     {
-      name: 'Entity', type: 'valueObject',
+      id: "5", name: 'Entity', type: 'valueObject',
       pluralName: 'Entities',
       tableName: 'Entities',
       partId: 3,
@@ -50,12 +50,12 @@
         { name: 'UpdatedAt', type: 'date', dbType: 'date', required: false },
         { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
       ],
-      relationships: [
-        { type: 'one', entity: 'Application', name: 'Application' }
+      relations: [
+        { type: '1:1', entity: 'Application', name: 'Application' }
       ]
     },
     {
-      name: 'ChangeLog', type: 'entity',
+      id: "6", name: 'ChangeLog', type: 'entity',
       pluralName: 'ChangeLogs',
       tableName: 'ChangeLogs2',
       partId: 3,
@@ -73,8 +73,8 @@
         { name: 'UpdatedAt', type: 'date', dbType: 'date', required: false },
         { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
       ],
-      relationships: [
-        { type: 'one', entity: 'Application', name: 'Application' }
+      relations: [
+        { type: '1:1', entity: 'Application', name: 'Application' }
       ]
     }
   ]

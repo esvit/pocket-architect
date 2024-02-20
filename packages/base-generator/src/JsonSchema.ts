@@ -16,20 +16,15 @@ export default {
         tenancyType: { type: 'string', enum: ['singletenant', 'multitenants'] },
       }
     },
-    endpoints: {
+    apps: {
       type: 'array',
       items: {
         type: 'object',
-        required: ['operationName', 'partId', 'summary', 'url', 'method'],
+        required: ['name', 'generator'],
         properties: {
-          operationName: { type: 'string' },
-          partId: { type: 'number' },
-          entityId: { type: 'number' },
-          summary: { type: 'string' },
-          description: { type: 'string' },
-          tag: { type: 'string' },
-          url: { type: 'string' },
-          method: { type: 'string', enum: ['get', 'post', 'put', 'delete', 'patch', 'head', 'options'] },
+          name: { type: 'string' },
+          generator: { type: 'string' },
+          options: { type: 'object' }
         }
       }
     },
@@ -42,7 +37,7 @@ export default {
           parent: { type: 'string' },
           name: { type: 'string' },
           description: { type: 'string' },
-          type: { type: 'string', enum: ['service', 'context', 'entity', 'valueObject', 'domain', 'aggregate'] },
+          type: { type: 'string', enum: ['service', 'bounded-context', 'entity', 'valueObject', 'domain', 'aggregate'] },
 
           attributes: {
             type: 'array',
@@ -99,14 +94,14 @@ export default {
               }
             }
           },
-          relationships: {
+          relations: {
             type: 'array',
             items: {
               type: 'object',
               required: ['name', 'type', 'entity'],
               properties: {
                 name: {type: 'string'},
-                type: {type: 'string', enum: ['one', 'many']},
+                type: {type: 'string', enum: ['1:1', 'n:n', '1:n', 'n:1']},
                 entity: {type: 'string'},
                 description: {type: 'string'},
               }

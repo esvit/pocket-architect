@@ -1,10 +1,11 @@
-import { Entity } from '@pocket-architect/core';
+import omit from 'lodash/omit';
+import { Entity, EntityId } from '@pocket-architect/core';
 import { AbstractProject } from './interfaces/IProject';
 import { kebabCase } from "../helpers/string";
 
 export enum LayerType {
   Domain = 'domain',
-  Context = 'context',
+  BoundedContext = 'bounded-context',
   Entity = 'entity',
   ValueObject = 'valueObject',
   Service = 'service',
@@ -14,6 +15,7 @@ export enum LayerType {
 }
 
 export interface ILayer {
+  id: string;
   parent?: string;
   name: string;
   description?:string;
@@ -27,52 +29,44 @@ export interface ILayerDependency {
   part: Layer
 }
 
+export class LayerId extends EntityId {}
+
 export
-class Layer extends Entity<ILayer> {
+class Layer extends Entity<ILayer, LayerId> {
   protected _domain: Layer = null;
-  protected _context: Layer = null;
+  protected _boundedContext: Layer = null;
   protected _parent: Layer = null;
   protected _project: AbstractProject = null;
   protected _layers: Layer[] = [];
   protected _dependencies: ILayerDependency[] = [];
   protected static types: Record<LayerType, typeof Layer> = <Record<LayerType, typeof Layer>>{};
 
-  public static registerType(type: LayerType, model: typeof Layer) {
+  public static registerType(type: LayerType, model: typeof Layer):void {
     Layer.types[type] = model;
   }
 
   public static create(props: ILayer, project:AbstractProject, parentPart: Layer|null = null, parentDomain: Layer|null = null, parentModule: Layer|null = null): Layer {
     let part;
     let domain = parentDomain;
-    let context = parentModule;
-    if (parentPart) {
-      if (parentPart.type === LayerType.Domain) {
-        domain = parentPart;
-      } else {
-        domain = parentPart.domain;
-      }
-      if (parentPart.type === LayerType.Context) {
-        context = parentPart;
-      } else {
-        context = parentPart.context;
-      }
-    }
+    let boundedContext = parentModule;
     if (Layer.types[props.type]) {
-      part = Layer.types[props.type].create(props, project, parentPart, domain, context);
+      part = Layer.types[props.type].create(props, project, parentPart, domain, boundedContext);
     } else {
-      part = new Layer(props);
+      part = new Layer(props, new LayerId(props.id));
     }
     if (props.type === LayerType.Domain) {
       domain = part;
     }
-    if (props.type === LayerType.Context) {
-      context = part;
+    if (props.type === LayerType.BoundedContext) {
+      boundedContext = part;
     }
     part.domain = domain;
-    part.context = context;
+    part.boundedContext = boundedContext;
     part._project = project;
-    part._parent = parentPart;
-    part._layers = (props.layers || []).map((i) => Layer.create(i, project, part, domain, context));
+    if (parentPart) {
+      part.parent = parentPart;
+    }
+    part._layers = (props.layers || []).map((i) => Layer.create(i, project, part, domain, boundedContext));
     return part;
   }
 
@@ -84,28 +78,55 @@ class Layer extends Entity<ILayer> {
     this._domain = domain;
   }
 
-  set context(module: Layer) {
-    this._context = module;
+  set boundedContext(module: Layer) {
+    this._boundedContext = module;
   }
 
   get parent():Layer {
     return this._parent;
   }
 
+  set parent(val: Layer) {
+    if (val && [LayerType.Entity, LayerType.ValueObject, LayerType.Interface].includes(val.type)) {
+      throw new Error('Invalid parent type');
+    }
+    this._parent = val;
+    if (val) {
+      this.props.parent = val && val.name;
+    } else {
+      delete this.props.parent;
+    }
+    if (val) {
+      if (val.type === LayerType.Domain) {
+        this.domain = val;
+      } else {
+        this.domain = val.domain;
+      }
+      if (val.type === LayerType.BoundedContext) {
+        this.boundedContext = val;
+      } else {
+        this.boundedContext = val.boundedContext;
+      }
+    }
+  }
+
   get domain():Layer|null {
     return this._domain;
   }
 
-  get context():Layer {
-    return this._context;
+  get boundedContext():Layer {
+    return this._boundedContext;
   }
 
   get path(): Layer[] {
-    return [this.domain, this.context, this].filter(p => !!p);
+    return [this._domain, this._boundedContext, this].filter(p => !!p);
   }
-
   get name(): string {
     return this.props.name;
+  }
+
+  set name(name:string) {
+    this.props.name = name;
   }
 
   get type(): LayerType {
@@ -131,5 +152,9 @@ class Layer extends Entity<ILayer> {
       this._dependencies.push(dependency);
     }
     dependency.names = dependency.names.concat(names.filter((name) => dependency.names.indexOf(name) === -1));
+  }
+
+  toJSON(): ILayer {
+    return omit(this.props, 'layers');
   }
 }

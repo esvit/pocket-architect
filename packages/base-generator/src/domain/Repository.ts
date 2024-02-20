@@ -8,13 +8,14 @@ export class Repository extends Interface {
 
   public static createFromEntity(entity: Entity): Repository {
     const repo = new Repository({
+      id: `repository-${entity.id}`,
       name: `${entity.name}Repo`,
       type: LayerType.Repository
     });
     repo._entity = entity;
     repo._interface = Interface.createFromPart(repo);
     repo._domain = entity.domain;
-    repo._context = entity.context;
+    repo._boundedContext = entity.boundedContext;
     repo.addDependency(entity, [entity.name]);
     return repo;
   }

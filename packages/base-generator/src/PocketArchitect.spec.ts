@@ -4,9 +4,9 @@ import {LayerType} from './domain/Layer';
 describe('PocketArchitect', () => {
   test('load', async () => {
     const project = await PocketArchitect.load(`${__dirname}/../../../.pocket-architect.json5`);
-    // await PocketArchitect.write(`${__dirname}/../../../.pocket-architect.json`, res);
+    // await PocketArchitect.write(`${__dirname}/../../../.pocket-architect.json`, project);
 
-    expect(project.layers[0].context).toBeDefined();
+    expect(project.layers[0].boundedContext).toBeDefined();
     expect(project.layers[0].parent).toEqual(null);
     expect(project.layers[0].type).toEqual(LayerType.Domain);
     expect(project.layers[0].layers[0].domain).toEqual(project.layers[0]);

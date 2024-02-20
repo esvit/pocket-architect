@@ -1,4 +1,4 @@
-import { Entity } from '@pocket-architect/core';
+import {Entity, EntityId} from '@pocket-architect/core';
 
 export enum ArchitectureType {
   Monolithic = 'monolithic',
@@ -19,8 +19,9 @@ export interface IMetadata {
   tenancyType: TenancyType;
 }
 
+class MetadataId extends EntityId {}
 export
-class Metadata extends Entity<IMetadata> {
+class Metadata extends Entity<IMetadata, MetadataId> {
   static create(props: IMetadata): Metadata {
     return new Metadata(props);
   }
@@ -31,5 +32,9 @@ class Metadata extends Entity<IMetadata> {
 
   get architectureType(): ArchitectureType {
     return this.props.architectureType;
+  }
+
+  toJSON(): IMetadata {
+    return this.props;
   }
 }
