@@ -1,29 +1,28 @@
-import PocketArchitect from './PocketArchitect';
-import {LayerType} from './domain/Layer';
+import PocketArchitect from './index';
+import {SchemaObjectType} from './domain/SchemaObject';
 
 describe('PocketArchitect', () => {
   test('load', async () => {
     const project = await PocketArchitect.load(`${__dirname}/../../../.pocket-architect.json5`);
-    // await PocketArchitect.write(`${__dirname}/../../../.pocket-architect.json`, project);
+    const { schema } = project;
 
-    expect(project.layers[0].boundedContext).toBeDefined();
-    expect(project.layers[0].parent).toEqual(null);
-    expect(project.layers[0].type).toEqual(LayerType.Domain);
-    expect(project.layers[0].layers[0].domain).toEqual(project.layers[0]);
-    expect(project.layers[0].layers[0].layers[0].domain).toEqual(project.layers[0]);
-    expect(project.layers[0].layers[0].parent).toEqual(project.layers[0]);
-    expect(project.layers[0].layers[0].layers[0].parent).toEqual(project.layers[0].layers[0]);
-    expect(project.layers[0].layers[0].layers[0].path).toEqual([
-      project.layers[0],
-      project.layers[0].layers[0],
-      project.layers[0].layers[0].layers[0],
+    expect(schema.objects[0].boundedContext).toBeDefined();
+    expect(schema.objects[0].parent).toEqual(null);
+    expect(schema.objects[0].type).toEqual(SchemaObjectType.Domain);
+    expect(schema.objects[0].objects[0].domain.equals(schema.objects[0])).toBeTruthy();
+    expect(schema.objects[0].objects[0].parent).toEqual(schema.objects[0]);
+    expect(schema.objects[0].objects[0].objects[0].parent).toEqual(schema.objects[0].objects[0]);
+    expect(schema.objects[0].objects[0].objects[0].path).toEqual([
+      schema.objects[0],
+      schema.objects[0].objects[0],
+      schema.objects[0].objects[0].objects[0],
     ]);
 
-    expect(project.layers[0].layers[0].name).toEqual('applications');
-    expect(project.layers[0].layers[0].domain.name).toEqual('main');
+    expect(schema.objects[0].objects[0].name).toEqual('applications');
+    expect(schema.objects[0].objects[0].domain.name).toEqual('main');
     expect(project.metadata.name).toEqual('MyApp');
-    expect(project.layers[0].name).toEqual('main');
-    expect(project.layers[1].name).toEqual('SecondDomain');
-    expect(project.layers[1].folderName).toEqual('second-domain');
+    expect(schema.objects[0].name).toEqual('main');
+    expect(schema.objects[1].name).toEqual('SecondDomain');
+    expect(schema.objects[1].folderName).toEqual('second-domain');
   });
 });

@@ -1,5 +1,5 @@
 import {Entity, EntityId} from '@pocket-architect/core';
-import { Layer } from './Layer';
+import { SchemaObject } from './SchemaObject';
 
 export enum AttributeType {
   String = 'string',
@@ -10,6 +10,7 @@ export enum AttributeType {
 }
 
 export interface IMethod {
+  id: string;
   name: string;
   type: AttributeType;
   enum?: string[];
@@ -17,14 +18,16 @@ export interface IMethod {
   description?: string;
 }
 
-class MethodId extends EntityId {}
+export class MethodId extends EntityId {
+  readonly isMethod = true;
+}
 
 export
 class Method extends Entity<IMethod, MethodId> {
-  protected _entity: Layer = null;
+  protected _entity: SchemaObject = null;
 
-  static create(props: IMethod, entity: Layer): Method {
-    const method = new Method(props);
+  static create(props: IMethod, entity: SchemaObject): Method {
+    const method = new Method(props, props.id);
     method._entity = entity;
     return method;
   }
@@ -41,7 +44,7 @@ class Method extends Entity<IMethod, MethodId> {
     return this.props.description;
   }
 
-  get entity(): Layer {
+  get entity(): SchemaObject {
     return this._entity;
   }
 }

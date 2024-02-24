@@ -19,7 +19,9 @@ export interface IMetadata {
   tenancyType: TenancyType;
 }
 
-class MetadataId extends EntityId {}
+export class MetadataId extends EntityId {
+  readonly isMetadata = true;
+}
 export
 class Metadata extends Entity<IMetadata, MetadataId> {
   static create(props: IMetadata): Metadata {

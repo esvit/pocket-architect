@@ -1,32 +1,33 @@
 import { Entity, IEntity } from './Entity';
-import {LayerType} from "./Layer";
+import {SchemaObjectType} from "./SchemaObject";
 import {RelationType} from "./Relation";
 import {Project} from "./Project";
 import {ArchitectureType, TenancyType} from "./Metadata";
+import {AttributeType} from "./Attribute";
 
 describe('Entity', () => {
   test('load', async () => {
     const entity = Entity.create({
       id: '1',
       name: 'MyEntity',
-      type: LayerType.Entity,
+      type: SchemaObjectType.Entity,
       attributes: [
-        { name: 'id', type: 'string' },
-        { name: 'name', type: 'string' },
+        { name: 'id', type: AttributeType.String },
+        { name: 'name', type: AttributeType.String },
       ],
     }, null);
     expect(entity.name).toEqual('MyEntity');
     expect(entity.dependencies).toEqual([
       { part: entity.interface, names: ['IMyEntity'] }
     ]);
-    expect(() => entity.layers).toThrow('Entity MyEntity does not have layers');
+    expect(() => entity.objects).toThrow('Entity MyEntity does not have layers');
 
     // interface
     expect(entity.interface.name).toEqual('IMyEntity');
     expect(entity.interface.dependencies).toEqual([
     ]);
     expect(entity.interface.boundedContext).toEqual(entity.boundedContext);
-    expect(() => entity.interface.layers).toThrow('Interface IMyEntity does not have layers');
+    expect(() => entity.interface.objects).toThrow('Interface IMyEntity does not have layers');
 
     // repository
     expect(entity.repository.name).toEqual('MyEntityRepo');
@@ -34,7 +35,7 @@ describe('Entity', () => {
       { part: entity.repository.interface, names: ['IMyEntityRepo'] },
       { part: entity, names: ['MyEntity'] }
     ]);
-    expect(() => entity.repository.layers).toThrow('Repository MyEntityRepo does not have layers');
+    expect(() => entity.repository.objects).toThrow('Repository MyEntityRepo does not have layers');
 
     // // // service
     expect(entity.service.name).toEqual('MyEntityService');
@@ -42,18 +43,15 @@ describe('Entity', () => {
       { part: entity, names: ['MyEntity'] },
       { part: entity.repository, names: ['IMyEntityRepo'] }
     ]);
-    expect(() => entity.service.layers).toThrow('Service MyEntityService does not have layers');
+    expect(() => entity.service.objects).toThrow('Service MyEntityService does not have layers');
   });
 
   test('create', async () => {
     const valueObjectProps:IEntity = {
       id: '1',
       name: 'test',
-      type: LayerType.Entity,
-      attributes: [],
-      relations: [
-        { name: 'test', type: RelationType.OneToOne, entity: 'Item', ref: 'test' }
-      ]
+      type: SchemaObjectType.Entity,
+      attributes: []
     };
     const project = Project.create({
       metadata: {
@@ -64,9 +62,28 @@ describe('Entity', () => {
         architectureType: ArchitectureType.Monolithic,
         tenancyType: TenancyType.SingleTenant
       },
-      layers: []
+      schema: {
+        objects: [],
+        relations: [
+          { name: 'test', type: RelationType.OneToOne, id: '1', source: { id: '1', columnName: 'test' }, target: { id: '1', columnName: 'test' } }
+        ]
+      }
     });
-    const valueObject = Entity.create(valueObjectProps, project);
-    expect(valueObject.relations[0].toJSON()).toEqual({ name: 'test', type: RelationType.OneToOne, entity: 'Item', ref: 'test' });
+    const valueObject = Entity.create(valueObjectProps, project.schema);
+    expect(valueObject.toJSON()).toEqual({
+      "attributes": [
+        {
+          "description": "Unique identifier for entity test",
+          "id": expect.any(String),
+          "mandatory": true,
+          "name": "id",
+          "system": true,
+          "type": "id"
+        }
+      ],
+      "id": "1",
+      "name": "test",
+      "type": "entity"
+    });
   });
 });

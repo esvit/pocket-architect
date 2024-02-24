@@ -2,7 +2,7 @@ const SEMVER_REGEX = '^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1
 
 export default {
   type: 'object',
-  required: ['metadata', 'layers'],
+  required: ['metadata', 'schema'],
   properties: {
     metadata: {
       type: 'object',
@@ -28,83 +28,91 @@ export default {
         }
       }
     },
-    layers: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['name', 'type'],
-        properties: {
-          parent: { type: 'string' },
-          name: { type: 'string' },
-          description: { type: 'string' },
-          type: { type: 'string', enum: ['service', 'bounded-context', 'entity', 'valueObject', 'domain', 'aggregate'] },
+    schema: {
+      type: 'object',
+      required: ['objects', 'relations'],
+      properties: {
+        objects: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['name', 'type'],
+            properties: {
+              parentId: { type: 'string' },
+              name: { type: 'string' },
+              description: { type: 'string' },
+              type: { type: 'string', enum: ['service', 'bounded-context', 'entity', 'value-object', 'domain', 'aggregate'] },
 
-          attributes: {
-            type: 'array',
-            items: {
-              type: 'object',
-              if: {
-                properties: { type: { "enum": ["enum"] } }
-              }, then: {
-                required: ["enum"]
-              }, else: {
-                required: ['name', 'type']
-              },
-              properties: {
-                name: { type: 'string' },
-                type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'enum'] },
-                mandatory: { type: 'boolean' },
-                enum: { type: 'array', items: { type: 'string' } },
-                description: { type: 'string' },
-              },
-            }
-          },
-          methods: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['name', 'parameters', 'return'],
-              properties: {
-                name: { type: 'string' },
-                type: { type: 'string', enum: ['command', 'query'] },
-                description: { type: 'string' },
-                parameters: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    required: ['name', 'type'],
-                    properties: {
-                      name: { type: 'string' },
-                      type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'enum'] },
-                      mandatory: { type: 'boolean' },
-                      enum: { type: 'array', items: { type: 'string' } },
-                      description: { type: 'string' },
-                    },
-                  }
-                },
-                return: {
+              attributes: {
+                type: 'array',
+                items: {
                   type: 'object',
-                  required: ['type'],
+                  if: {
+                    properties: { type: { "enum": ["enum"] } }
+                  }, then: {
+                    required: ["enum"]
+                  }, else: {
+                    required: ['name', 'type']
+                  },
                   properties: {
-                    type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'enum'] },
+                    name: { type: 'string' },
+                    type: { type: 'string', enum: ['id', 'string', 'number', 'boolean', 'date', 'enum'] },
+                    mandatory: { type: 'boolean' },
                     enum: { type: 'array', items: { type: 'string' } },
                     description: { type: 'string' },
+                  },
+                }
+              },
+              methods: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['name', 'parameters', 'return'],
+                  properties: {
+                    name: { type: 'string' },
+                    type: { type: 'string', enum: ['command', 'query'] },
+                    description: { type: 'string' },
+                    parameters: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        required: ['name', 'type'],
+                        properties: {
+                          name: { type: 'string' },
+                          type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'enum'] },
+                          mandatory: { type: 'boolean' },
+                          enum: { type: 'array', items: { type: 'string' } },
+                          description: { type: 'string' },
+                        },
+                      }
+                    },
+                    return: {
+                      type: 'object',
+                      required: ['type'],
+                      properties: {
+                        type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'enum'] },
+                        enum: { type: 'array', items: { type: 'string' } },
+                        description: { type: 'string' },
+                      }
+                    }
                   }
                 }
               }
             }
-          },
-          relations: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['name', 'type', 'entity'],
-              properties: {
-                name: {type: 'string'},
-                type: {type: 'string', enum: ['1:1', 'n:n', '1:n', 'n:1']},
-                entity: {type: 'string'},
-                description: {type: 'string'},
-              }
+          }
+        },
+        relations: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['id', 'name', 'type', 'source', 'target'],
+            properties: {
+              id: {type: 'string'},
+              name: {type: 'string'},
+              type: {type: 'string', enum: ['1:1', 'n:n', '1:n', 'n:1']},
+              source: {type: 'object'},
+              target: {type: 'object'},
+              description: {type: 'string'},
             }
           }
         }

@@ -1,5 +1,5 @@
 import { Entity } from './Entity';
-import {Layer, LayerType} from "./Layer";
+import {SchemaObjectType} from "./SchemaObject";
 import {Interface} from "./Interface";
 
 export class Repository extends Interface {
@@ -10,7 +10,7 @@ export class Repository extends Interface {
     const repo = new Repository({
       id: `repository-${entity.id}`,
       name: `${entity.name}Repo`,
-      type: LayerType.Repository
+      type: SchemaObjectType.Repository
     });
     repo._entity = entity;
     repo._interface = Interface.createFromPart(repo);
@@ -24,9 +24,7 @@ export class Repository extends Interface {
     return this._interface;
   }
 
-  get type(): LayerType {
-    return LayerType.Repository;
+  get type(): SchemaObjectType {
+    return SchemaObjectType.Repository;
   }
 }
-
-Layer.registerType(LayerType.Repository, Repository);

@@ -1,57 +1,40 @@
-// import util from 'util';
-import { Metadata } from './Metadata';
-import {ILayer, Layer, LayerId} from './Layer';
-import { plainListToTree } from '../helpers/tree';
-import {AbstractProject, ProjectId, IProject} from './interfaces/IProject';
+import {IMetadata, Metadata} from './Metadata';
+import {Schema, ISchema} from './Schema';
+import {AggregateRoot, EntityId} from "@pocket-architect/core";
 
-export { IProject, ProjectId };
+export interface IProject {
+  metadata: IMetadata;
+  schema: ISchema;
+}
+
+export class ProjectId extends EntityId {
+  readonly isProject = true;
+}
 
 export
-class Project extends AbstractProject {
-  protected _plainListLayers: Layer[] = [];
+class Project extends AggregateRoot<IProject, ProjectId> {
+  protected _metadata: Metadata = null;
+  protected _schema: Schema = null;
 
   public static create(props: IProject): Project {
     const project = new Project(props);
     project._metadata = Metadata.create(props.metadata);
-    project.rebuildTree();
+    project._schema = Schema.create(props.schema);
     return project;
   }
 
-  changeParent(layer: Layer, parent: Layer|null): void {
-    layer.parent = parent;
-    this.rebuildTree();
+  get metadata(): Metadata {
+    return this._metadata;
   }
 
-  addLayer(layer: ILayer): Layer {
-    this.props.layers.push(layer);
-    this.rebuildTree();
-    return this.getLayerById(new LayerId(layer.id));
-  }
-
-  removeLayer(name: string): void {
-    this.props.layers = this.props.layers.filter((i) => i.name !== name);
-    this.rebuildTree();
-  }
-
-  protected rebuildTree(): void {
-    const [list, tree] = plainListToTree<ILayer, Layer>(this.props.layers, (i) => Layer.create(i, this), 'layers');
-    this._plainListLayers = list;
-    this._layers = tree;
-    // console.log(util.inspect(tree[0], {showHidden: false, depth: null, colors: true}))
-  }
-
-  getLayerById(id: LayerId): Layer|null {
-    return this._plainListLayers.find((i) => i.id.equals(id));
-  }
-
-  get listLayers(): Layer[] {
-    return this._plainListLayers;
+  get schema(): Schema {
+    return this._schema;
   }
 
   toJSON(): IProject {
     return {
       metadata: this._metadata.toJSON(),
-      layers: this._plainListLayers.map((i) => i.toJSON()),
+      schema: this._schema.toJSON()
     };
   }
 }

@@ -1,5 +1,5 @@
 import { Entity } from './Entity';
-import {Layer, LayerType} from "./Layer";
+import {SchemaObjectType} from "./SchemaObject";
 import {Interface} from "./Interface";
 import {Repository} from "./Repository";
 
@@ -11,7 +11,7 @@ export class Service extends Interface {
     const repo = new Service({
       id: `service-${entity.id}`,
       name: `${entity.name}Service`,
-      type: LayerType.Service
+      type: SchemaObjectType.Service
     });
     repo._entity = entity;
     repo._repository = repository;
@@ -22,9 +22,7 @@ export class Service extends Interface {
     return repo;
   }
 
-  get type(): LayerType {
-    return LayerType.Service;
+  get type(): SchemaObjectType {
+    return SchemaObjectType.Service;
   }
 }
-
-Layer.registerType(LayerType.Service, Service);
