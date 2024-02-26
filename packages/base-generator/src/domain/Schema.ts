@@ -150,6 +150,11 @@ class Schema extends Entity<ISchema, SchemaId> {
     return {
       objects: this._plainListSchemaObjects.map((i) => i.toJSON()),
       relations: this._relations.map((i) => i.toJSON()),
+      namingStrategy: {
+        objects: this._namingPolicy.type,
+        database: this._databaseNamingPolicy.type,
+        properties: this._propertiesNamingPolicy.type
+      }
     };
   }
 
