@@ -4,8 +4,8 @@ import { EntityId } from './EntityId';
 interface TestProps {
   name: string;
 }
-class TestEntity extends Entity<TestProps, EntityId> {
-  static create(props: TestProps, id?:EntityId|string|number): TestEntity {
+class TestEntity extends Entity<TestProps, number, EntityId<number>> {
+  static create(props: TestProps, id?:EntityId<number>|number): TestEntity {
     return new TestEntity(props, id);
   }
 }

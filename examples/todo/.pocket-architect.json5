@@ -4,16 +4,27 @@
     description: 'Test application',
     initialVersion: '0.1.0',
     version: '0.1.1',
-    architectureType: 'monolith',
+    architectureType: 'monolithic',
     tenancyType: 'multitenants'
   },
-  endpoints: [
-    { operationName: 'getApplications', entityId: 1, tag: 'Applications', summary: 'Get list of applications', description: 'No description', partId: 3, method: 'get', url: '/users' }
+  apps: [
+    {
+      name: 'http-api',
+      generator: '@pocket-architect/generator-koa',
+      options:  {
+        endpoints: [
+          { operationName: 'getApplications', entityId: 1, tag: 'Applications', summary: 'Get list of applications', description: 'No description', partId: 3, method: 'get', url: '/users' }
+        ],
+      }
+    },
+    {
+      name: 'nuxt',
+      generator: '@pocket-architect/generator-nuxt'
+    }
   ],
-  parts: [
-    { name: 'main', type: 'service' },
-    { name: 'webservice1', type: 'service' },
-    { name: 'applications', type: 'module', parent: 'main' },
+  layers: [
+    { name: 'main', type: 'domain' },
+    { name: 'applications', type: 'context', parent: 'main' },
     {
       name: 'Metadata', type: 'entity', parent: "applications",
       attributes: [
@@ -25,10 +36,10 @@
         { name: 'tenancyType', type: 'enum', enum: ['singleTenant', 'multiTenants'], mandatory: true }
       ],
       methods: [
-        { name: 'getApplications', type: 'query', description: 'Get list of applications', parameters: [], returns: 'Application[]' }
+        { name: 'getApplications', type: 'query', description: 'Get list of applications', parameters: [], return: { type: 'string' } }
       ],
       relationships: [
-        { type: 'many', entity: 'Entity', name: 'Entities' }
+        { type: 'n:n', entity: 'Entity', name: 'Entities' }
       ]
     },
     {
@@ -51,7 +62,7 @@
         { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
       ],
       relationships: [
-        { type: 'one', entity: 'Application', name: 'Application' }
+        { type: '1:1', entity: 'Application', name: 'Application' }
       ]
     },
     {
@@ -74,7 +85,7 @@
         { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
       ],
       relationships: [
-        { type: 'one', entity: 'Application', name: 'Application' }
+        { type: '1:1', entity: 'Application', name: 'Application' }
       ]
     }
   ]

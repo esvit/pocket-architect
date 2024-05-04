@@ -48,7 +48,7 @@ export class Interface extends SchemaObject {
   }
 
   addAttribute(attr: Attribute): Attribute {
-    if (!this._schema.propertiesNamingPolicy.validate(attr.name)) {
+    if (attr.name && !this._schema.propertiesNamingPolicy.validate(attr.name)) {
       throw new Error(`"${attr.name}" is not valid according to ${this.schema.propertiesNamingPolicy.type} naming policy`);
     }
     if (attr.columnName && !this._schema.databaseNamingPolicy.validate(attr.columnName)) {

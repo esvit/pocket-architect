@@ -1,7 +1,14 @@
-{%- macro interfaceAttributes(attributes) -%}
+{%- macro interfaceAttributes(attributes, relations) -%}
   {%- for attribute in attributes %}
-  {{ attribute.name }}{% if not attribute.mandatory %}?{% endif%}: {{ attribute.jsType }};
+  {{ attribute.name }}{% if not attribute.mandatory %}?{% endif%}: {{ attribute.jsType }};{% if attribute.description %} // {{ attribute.description }}{% endif %}
   {%- endfor %}
+  {% for relation in relations -%}
+  {%- if relation.type === '1:1' -%}
+  {{relation.name}}: {{relation.ref}};
+  {%- else -%}
+  {{relation.name}}: {{relation.ref}}[];
+  {%- endif -%}
+  {% endfor %}
 {%- endmacro -%}
 {%- macro enums(attributes) -%}
 {%- for attribute in attributes %}
@@ -14,8 +21,16 @@ export enum {{attribute.enumName}} {
 {% endif -%}
 {%- endfor %}
 {%- endmacro -%}
-{%- macro dependencies(dependencies, path) -%}
+{%- macro dependencies(dependencies, path, entityName, attributes) -%}
 {% for dependency in dependencies -%}
-import { {% for name in dependency.names %}{{name}}{% if not loop.last %}, {% endif %}{% endfor %} } from '{{ dependency.part|dependencyPath(path) }}';
+import { {% if entityName %}{{entityName|capitalize}}Id,{% endif %}{% for attribute in attributes %}{% if attribute.type == 'enum' %}{{attribute.enumName}}, {% endif %}{% endfor %}{% for name in dependency.names %}{{name}}{% if not loop.last %}, {% endif %}{% endfor %} } from '{{ dependency.part|dependencyPath(path) }}';
 {% endfor %}
+{%- endmacro -%}
+{%- macro getterSettersAttributes(attributes, relations) -%}
+  {%- for attribute in attributes %}
+  {% if attribute.name != 'id' -%}
+  get {{ attribute.name }}(): {{ attribute.jsType }} { return this.props.{{ attribute.name }}; }
+  set {{ attribute.name }}(val: {{ attribute.jsType }}) { this.props.{{ attribute.name }} = val; }
+  {% endif %}
+  {%- endfor %}
 {%- endmacro -%}

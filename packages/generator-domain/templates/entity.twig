@@ -1,11 +1,16 @@
-{% from "partials/macro.twig" import dependencies %}
+{% from "partials/macro.twig" import dependencies, getterSettersAttributes %}
 import { Entity } from '@pocket-architect/core';
-{{ dependencies(entity.dependencies, path) }}
+{{ dependencies(entity.dependencies, path, entity.name, entity.attributes) }}
 export
-class {{entity.name}} extends Entity<{{entity.interface.name}}> {
+class {{entity.name}} extends Entity<{{entity.interface.name}}, {{entity.name|capitalize}}Id> {
   public static create(props: {{entity.interface.name}}): {{entity.name}} {
     const entity = new {{entity.name}}(props);
     // TODO: Another properties here
     return entity;
+  }
+  {{ getterSettersAttributes(entity.attributes) }}
+
+  toPrimitive() {
+    return this.props;
   }
 }

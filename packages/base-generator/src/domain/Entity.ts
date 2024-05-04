@@ -24,6 +24,7 @@ export class Entity extends ValueObject {
         name: 'id',
         type: AttributeType.Id,
         system: true,
+        primaryKey: true,
         mandatory: true,
         description: `Unique identifier for entity ${entity.name}`
       }, entity)); // add id attribute

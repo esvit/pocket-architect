@@ -1,23 +1,23 @@
 import { EntityId } from './EntityId';
 
-const isEntity = <T, H extends EntityId>(v: Entity<T, H>): v is Entity<T, H> => {
+const isEntity = <T, E, M extends EntityId<E>>(v: Entity<T, E, M>): v is Entity<T, E, M> => {
   return v instanceof Entity
 }
 
-export abstract class Entity<T, H extends EntityId> {
+export abstract class Entity<T, E, H extends EntityId<E>> {
   protected readonly _id: H;
   protected props: T;
 
-  protected constructor(props: T, id?: H|string|number) {
+  protected constructor(props: T, id?: H|E) {
     if (id) {
-      this._id = <H>(typeof id === 'object' ? id : new EntityId(id));
+      this._id = <H>(typeof id === 'object' ? id : new EntityId<E>(id));
     } else {
       this._id = <H>(new EntityId());
     }
     this.props = props
   }
 
-  public equals(object?: Entity<T, H>): boolean {
+  public equals(object?: Entity<T, E, H>): boolean {
     if (object === null || object === undefined) {
       return false
     }

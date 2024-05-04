@@ -38,9 +38,9 @@
     "yenv": "^3.0.1"
   },
   "devDependencies": {
-    "@pocket-architect/generator-domain": "^0.1.12",
+    "@pocket-architect/generator-domain": "^0.1.13",
     "@pocket-architect/generator-koa": "^0.1.8",
-    "@pocket-architect/generator-sequelize": "^0.1.2",
+    "@pocket-architect/generator-sequelize": "^0.1.3",
     "@types/jest": "^29.5.1",
     "@types/koa-bodyparser": "^4.3.10",
     "@types/koa-compress": "^4.0.3",

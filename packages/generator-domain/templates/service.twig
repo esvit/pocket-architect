@@ -8,4 +8,10 @@ class {{entity.service.name}} {
 
     console.info({{entity.name}});
   }
+
+  {% for method in entity.methods %}
+  // async {{method.name }}():any {
+  //  return await this.{{ entity.repository.name|variableCase }}.{{ method.name }}();
+  // }
+  {% endfor %}
 }

@@ -16,6 +16,7 @@ export interface IAttribute {
   name: string;
   type: AttributeType;
   enum?: string[];
+  primaryKey?: boolean;
   system?: boolean;
   transient?: boolean;
   readonly?: boolean;
@@ -43,7 +44,7 @@ class Attribute extends Entity<IAttribute, AttributeId> {
   }
 
   private set name(val:string) {
-    if (!val.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/)) {
+    if (val && !val.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/)) {
       throw new Error(`Invalid attribute name: ${val}`);
     }
     this.props.name = val;
@@ -54,7 +55,7 @@ class Attribute extends Entity<IAttribute, AttributeId> {
   }
 
   private set columnName(val:string) {
-    if (!val.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/)) {
+    if (val && !val.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/)) {
       throw new Error(`Invalid column name: ${val}`);
     }
     this.props.columnName = val;

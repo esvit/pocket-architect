@@ -1,0 +1,89 @@
+{
+  metadata: {
+    name: 'ShoppingCart',
+    description: 'Example of a shopping cart',
+    initialVersion: '0.1.0',
+    version: '0.1.1',
+    architectureType: 'monolithic',
+    tenancyType: 'singletenant',
+  },
+  endpoints: [
+    { operationName: 'getApplications', entityId: 1, tag: 'Applications', summary: 'Get list of applications', description: 'No description', partId: 3, method: 'get', url: '/users' }
+  ],
+  layers: [
+    { name: 'main', type: 'domain' },
+    { name: 'appRunner', type: 'context', parent: 'main' },
+    {
+      name: 'App', type: 'entity', parent: 'appRunner',
+      attributes: [
+        { name: 'appName', type: 'string', mandatory: true },
+        { name: 'version', type: 'string', mandatory: true },
+        { name: 'versionHash', type: 'string', mandatory: true },
+        { name: 'path', type: 'string', mandatory: true },
+        { name: 'image', type: 'string' },
+        { name: 'portNumber', type: 'number' },
+        { name: 'createdAt', type: 'date' }
+      ],
+      methods: [
+        { name: 'getApplications', type: 'query', description: 'Get list of applications', parameters: [], return: { type: 'string' } }
+      ],
+      relations: [
+        { type: '1:1', entity: 'AppHook', name: 'successHooks', ref: 'AppHook' },
+        { type: '1:1', entity: 'AppHook', name: 'errorHooks', ref: 'AppHook' },
+      ]
+    },
+    {
+      name: 'AppInstance', type: 'entity', parent: 'appRunner',
+      attributes: [
+        { name: 'appName', type: 'string', mandatory: true },
+        { name: 'tenantId', type: 'number', mandatory: true },
+        { name: 'createdAt', type: 'date', mandatory: true },
+        { name: 'uninstalledAt', type: 'date' },
+        { name: 'params', type: 'string', mandatory: true },
+        { name: 'context', type: 'string', mandatory: true },
+        { name: 'manifest', type: 'string', mandatory: true },
+        { name: 'installed', type: 'boolean', mandatory: true }
+      ]
+    },
+    {
+      name: 'AppProperty', type: 'entity', parent: 'appRunner',
+      attributes: [
+        { name: 'appName', type: 'string', mandatory: true },
+        { name: 'name', type: 'string', mandatory: true },
+        { name: 'tenantId', type: 'number', mandatory: true },
+        { name: 'value', type: 'string', mandatory: true }
+      ]
+    },
+    {
+      name: 'AppHook', type: 'valueObject', parent: 'appRunner',
+      attributes: [
+        { name: 'count', type: 'number', required: true },
+        { name: 'last', type: 'date' }
+      ]
+    },
+    {
+      name: 'Hook', type: 'entity', parent: 'appRunner',
+      attributes: [
+        { name: 'eventName', type: 'string', required: true },
+        { name: 'tenantId', type: 'number', mandatory: true },
+        { name: 'userId', type: 'number' },
+        { name: 'createdAt', type: 'date', mandatory: true },
+        { name: 'payload', type: 'string', mandatory: true },
+        { name: 'locked', type: 'boolean', mandatory: true }
+      ]
+    },
+    {
+      name: 'HookResult', type: 'entity', parent: 'appRunner',
+      attributes: [
+        { name: 'appName', type: 'string', required: true },
+        { name: 'tenantId', type: 'number', mandatory: true },
+        { name: 'eventName', type: 'string', required: true },
+        { name: 'state', type: 'enum', enum:  ['success', 'failed', 'no_apps'], required: true },
+        { name: 'userId', type: 'number' },
+        { name: 'payload', type: 'string', mandatory: true },
+        { name: 'result', type: 'string' },
+        { name: 'error', type: 'string' }
+      ]
+    }
+  ]
+}

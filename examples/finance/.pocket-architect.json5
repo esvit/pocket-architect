@@ -1,0 +1,49 @@
+{
+  metadata: {
+    name: 'ITFin',
+    description: 'Example of a shopping cart',
+    initialVersion: '0.1.0',
+    version: '0.1.1',
+    architectureType: 'monolithic',
+    tenancyType: 'singletenant',
+  },
+  endpoints: [
+    { operationName: 'getApplications', entityId: 1, tag: 'Applications', summary: 'Get list of applications', description: 'No description', partId: 3, method: 'get', url: '/users' }
+  ],
+  layers: [
+    { name: 'main', type: 'domain' },
+    { name: 'cart', type: 'context', parent: 'main' },
+    {
+      name: 'ExchangeSource', type: 'entity', parent: 'cart',
+      attributes: [
+        { name: 'name', type: 'string', mandatory: true },
+        { name: 'country', type: 'string', mandatory: true },
+        { name: 'baseCurrencyCode', type: 'string', mandatory: true },
+        { name: 'quoteCurrencyCodes', type: 'string', mandatory: true },
+        { name: 'jsCode', type: 'string', mandatory: true },
+        { name: 'sourceType', type: 'enum', enum: ['System', 'UserDefined'], mandatory: true }
+      ],
+      methods: [
+        { name: 'getApplications', type: 'query', description: 'Get list of applications', parameters: [], return: { type: 'string' } }
+      ],
+      relations: [
+        { type: 'n:n', entity: 'Cart', name: 'carts', ref: 'CartItem' }
+      ]
+    },
+    {
+      name: 'Cart', type: 'entity', parent: 'cart',
+      attributes: [
+        { name: 'totalPrice', type: 'string', required: true }
+      ],
+      relations: [
+        { type: 'n:n', entity: 'Item', name: 'products', ref: 'CartItem' }
+      ]
+    },
+    {
+      name: 'CartItem', type: 'valueObject', parent: 'cart',
+      attributes: [
+        { name: 'quantity', type: 'number', required: true }
+      ]
+    }
+  ]
+}

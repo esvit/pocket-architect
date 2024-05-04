@@ -1,5 +1,11 @@
 {%- from "partials/macro.twig" import interfaceAttributes, enums -%}
+{% if entity.type == 'entity' %}
+import { EntityId } from '@pocket-architect/core';
+
+export class {{entity.name|capitalize}}Id extends EntityId {
+}
+{% endif %}
 {{ enums(interface.attributes) -}}
 export interface {{interface.name}} {
-{{- interfaceAttributes(entity.attributes) }}
+{{- interfaceAttributes(entity.attributes, entity.relations) }}
 }

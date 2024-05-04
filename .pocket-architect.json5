@@ -10,72 +10,71 @@
   endpoints: [
     { operationName: 'getApplications', entityId: 1, tag: 'Applications', summary: 'Get list of applications', description: 'No description', partId: 3, method: 'get', url: '/users' }
   ],
-  layers: [
-    { id: "1", name: 'main', type: 'domain' },
-    { id: "2", name: 'SecondDomain', type: 'domain' },
-    { id: "3", name: 'applications', type: 'bounded-context', parent: 'main' },
-    {
-      id: "4", name: 'Metadata', type: 'entity', parent: "applications",
-      attributes: [
-        { name: 'name', type: 'string', mandatory: true, description: 'User name' },
-        { name: 'initialVersion', type: 'string', mandatory: true },
-        { name: 'version', type: 'string', mandatory: true },
-        { name: 'description', type: 'string' },
-        { name: 'architectureType', type: 'enum', enum: ['monolithic', 'multiservices'], mandatory: true },
-        { name: 'tenancyType', type: 'enum', enum: ['singleTenant', 'multiTenants'], mandatory: true }
-      ],
-      methods: [
-        { name: 'getApplications', type: 'query', description: 'Get list of applications', parameters: [], return: { type: 'string' } }
-      ],
-      relations: [
-        { type: 'n:n', entity: 'Entity', name: 'Entities' }
-      ]
-    },
-    {
-      id: "5", name: 'Entity', type: 'valueObject',
-      pluralName: 'Entities',
-      tableName: 'Entities',
-      partId: 3,
-      databaseId: 1,
-      attributes: [
-        {
-          name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
-          options: { optionalCreate: true }
-        },
-        {
-          name: 'ApplicationId', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true
-        },
-        { name: 'Name', type: 'string', required: true },
-        { name: 'CreatedAt', type: 'date', dbType: 'date', options: { optionalCreate: true } },
-        { name: 'UpdatedAt', type: 'date', dbType: 'date', required: false },
-        { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
-      ],
-      relations: [
-        { type: '1:1', entity: 'Application', name: 'Application' }
-      ]
-    },
-    {
-      id: "6", name: 'ChangeLog', type: 'entity',
-      pluralName: 'ChangeLogs',
-      tableName: 'ChangeLogs2',
-      partId: 3,
-      databaseId: 1,
-      attributes: [
-        {
-          name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
-          options: { optionalCreate: true }
-        },
-        {
-          name: 'ApplicationId', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true
-        },
-        { name: 'Name', type: 'string', required: true },
-        { name: 'CreatedAt', type: 'date', dbType: 'date', options: { optionalCreate: true } },
-        { name: 'UpdatedAt', type: 'date', dbType: 'date', required: false },
-        { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
-      ],
-      relations: [
-        { type: '1:1', entity: 'Application', name: 'Application' }
-      ]
-    }
-  ]
+  schema: {
+    relations: [
+      { id: '1', type: '1:1', source: { id: '4' }, target: { id: '5' }, name: 'Application' },
+      { id: '2', type: 'n:n', source: { id: '4' }, target: { id: '5' }, name: 'Entities' },
+    ],
+    objects: [
+      { id: "1", name: 'main', type: 'domain' },
+      { id: "2", name: 'SecondDomain', type: 'domain' },
+      { id: "3", name: 'applications', type: 'bounded-context', parentId: '1' },
+      {
+        id: "4", name: 'Metadata', type: 'entity', parentId: "3",
+        attributes: [
+          { name: 'name', type: 'string', mandatory: true, description: 'User name' },
+          { name: 'initialVersion', type: 'string', mandatory: true },
+          { name: 'version', type: 'string', mandatory: true },
+          { name: 'description', type: 'string' },
+          { name: 'architectureType', type: 'enum', enum: ['monolithic', 'multiservices'], mandatory: true },
+          { name: 'tenancyType', type: 'enum', enum: ['singleTenant', 'multiTenants'], mandatory: true }
+        ],
+        methods: [
+          { name: 'getApplications', type: 'query', description: 'Get list of applications', parameters: [], return: { type: 'string' } }
+        ]
+      },
+      {
+        parentId: "3",
+        id: "5", name: 'Entity', type: 'value-object',
+        pluralName: 'Entities',
+        tableName: 'Entities',
+        partId: 3,
+        databaseId: 1,
+        attributes: [
+          {
+            name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
+            options: { optionalCreate: true }
+          },
+          {
+            name: 'ApplicationId', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true
+          },
+          { name: 'Name', type: 'string', required: true },
+          { name: 'CreatedAt', type: 'date', dbType: 'date', options: { optionalCreate: true } },
+          { name: 'UpdatedAt', type: 'date', dbType: 'date', required: false },
+          { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
+        ]
+      },
+      {
+        parentId: "2",
+        id: "6", name: 'ChangeLog', type: 'entity',
+        pluralName: 'ChangeLogs',
+        tableName: 'ChangeLogs2',
+        partId: 3,
+        databaseId: 1,
+        attributes: [
+          {
+            name: 'Id', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true, primaryKey: true,
+            options: { optionalCreate: true }
+          },
+          {
+            name: 'ApplicationId', type: 'number', dbType: 'bigint', fieldName: 'Id', length: 20, required: true
+          },
+          { name: 'Name', type: 'string', required: true },
+          { name: 'CreatedAt', type: 'date', dbType: 'date', options: { optionalCreate: true } },
+          { name: 'UpdatedAt', type: 'date', dbType: 'date', required: false },
+          { name: 'DeletedAt', type: 'date', dbType: 'date', required: false }
+        ]
+      }
+    ]
+  }
 }

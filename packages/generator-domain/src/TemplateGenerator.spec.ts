@@ -1,7 +1,7 @@
 import TemplateGenerator from './TemplateGenerator';
 import {
   Project,
-  LayerType, TenancyType,
+  SchemaObjectType, TenancyType,
   ArchitectureType
 } from '@pocket-architect/base-generator';
 
@@ -12,11 +12,13 @@ describe('TemplateGenerator', () => {
   beforeEach(() => {
     project = Project.create({
       metadata: { name: 'test', initialVersion: '0.0.0', version: '0.0.0', architectureType: ArchitectureType.Multiservices, tenancyType: TenancyType.MultiTenants },
-      layers: [{
-        name: 'main', type: LayerType.Context
-      }, {
-        name: 'test', type: LayerType.Entity, parent: 'main'
-      }]
+      schema: {
+        objects: [{
+          id: 'main', name: 'Main', type: SchemaObjectType.BoundedContext
+        }, {
+          id: 'test', name: 'Test', type: SchemaObjectType.Entity, parentId: 'main'
+        }]
+      }
     });
     generator = new TemplateGenerator();
   });
