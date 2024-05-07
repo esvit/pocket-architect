@@ -34,12 +34,15 @@ class TestSubscriber implements DomainEventSubscriber {
 jest.mock('events', () => {
   return {
     EventEmitter: class {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       listeners: any = {};
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       on(event: string, listener: any) {
         this.listeners[event] = listener;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       emit(event: string, ...args: any[]) {
         this.listeners[event](...args);
       }

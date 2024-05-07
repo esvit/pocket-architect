@@ -15,3 +15,6 @@ export abstract class AggregateRoot<T, E, H extends EntityId<E>> extends Entity<
     this._domainEvents.push(event);
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyAggregateRoot<T> = AggregateRoot<any, T, any>;
