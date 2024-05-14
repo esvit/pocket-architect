@@ -3,6 +3,9 @@ import { EntityId } from './EntityId';
 class TestId extends EntityId<number> {
 }
 
+class Test2Id extends EntityId<string> {
+}
+
 describe('ValueObject', () => {
   test('base', async () => {
     const id = new TestId(1);
@@ -10,5 +13,21 @@ describe('ValueObject', () => {
     const id3 = new TestId(1);
     expect(id).toEqual(id3);
     expect(id).not.toEqual(id2);
+  });
+
+  test('toHash', async () => {
+    const id = new Test2Id('123');
+    expect(id.toHash()).toEqual('9KdMR');
+    expect(id.fromHash('VLoxm').toPrimitive()).toEqual('1');
+    expect(id.toPrimitive()).toEqual('1');
+    expect(id.toString()).toEqual('090bb5d1-267b-5967-84c8-95bc1bda380f');
+
+    const id2 = new TestId(123);
+    expect(id2.toHash()).toEqual('BJejP');
+    expect(id2.fromHash('BJejP').toPrimitive()).toEqual(123);
+
+    const id3 = new Test2Id();
+    expect(() => id3.toHash()).toThrow('Cannot hash an empty recordId');
+    expect(() => id3.fromHash('123')).toThrow('Cannot hash an empty recordId');
   });
 });

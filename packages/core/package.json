@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
+    "hashids": "^2.3.0",
     "shallow-equal-object": "^1.1.1",
     "uuid-by-string": "^4.0.0"
   },
