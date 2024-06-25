@@ -30,9 +30,6 @@ export class EntityId<T> {
   }
 
   fromHash(hash: string) : EntityId<T> {
-    if (!this._recordId) {
-      throw new Error('Cannot hash an empty recordId');
-    }
     const hashids = new Hashids(...this.hashOptions);
     const num = hashids.decode(hash)[0];
     this._recordId = <T>(typeof this._recordId === 'string' ? num.toString() : num);

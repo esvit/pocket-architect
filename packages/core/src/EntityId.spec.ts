@@ -28,6 +28,5 @@ describe('ValueObject', () => {
 
     const id3 = new Test2Id();
     expect(() => id3.toHash()).toThrow('Cannot hash an empty recordId');
-    expect(() => id3.fromHash('123')).toThrow('Cannot hash an empty recordId');
   });
 });
