@@ -13,6 +13,9 @@ describe('ValueObject', () => {
     const id3 = new TestId(1);
     expect(id).toEqual(id3);
     expect(id).not.toEqual(id2);
+
+    const id4 = new Test2Id('9KdMR', true);
+    expect(id4.toPrimitive()).toEqual('123')
   });
 
   test('toHash', async () => {

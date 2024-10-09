@@ -6,8 +6,11 @@ export class EntityId<T> {
   protected _recordId: T|null = null;
   protected _uuid: string = null;
 
-  constructor(recordId: T = null, uuid: string = null) {
+  constructor(recordId: T = null, isHash:boolean = false, uuid: string = null) {
     this._recordId = recordId ? recordId : null;
+    if (isHash) {
+      this.fromHash(recordId as string);
+    }
     if (!uuid) {
       this.createUUID();
     }
