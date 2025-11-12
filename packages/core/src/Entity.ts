@@ -7,6 +7,35 @@ const isEntity = <T, E, M extends EntityId<E>>(v: Entity<T, E, M>): v is Entity<
 export abstract class Entity<T, E, H extends EntityId<E>> {
   protected readonly _id: H;
   protected props: T;
+  protected _snapshot: string;
+
+  snapshot(): T {
+    this._snapshot = JSON.stringify(this.props);
+    const copy = JSON.parse(this._snapshot) as T;
+    Object.freeze(copy);
+    return copy;
+  }
+
+  snapshotDiff(): Partial<T> | null {
+    if (!this._snapshot) {
+      return null;
+    }
+    const diffs: Partial<T> = {};
+    const copy = JSON.parse(this._snapshot);
+    for (const key in this.props) {
+      if (JSON.stringify(this.props[key]) !== JSON.stringify(copy[key])) {
+        diffs[key] = this.props[key];
+      }
+    }
+    return Object.keys(diffs).length > 0 ? diffs : null;
+  }
+
+  isDirty(): boolean {
+    if (!this._snapshot) {
+      return false;
+    }
+    return this._snapshot !== JSON.stringify(this.props);
+  }
 
   protected constructor(props: T, id?: H|E) {
     if (id) {

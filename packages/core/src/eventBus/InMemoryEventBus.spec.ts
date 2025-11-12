@@ -12,12 +12,8 @@ class TestAggregate extends AggregateRoot<ITestAggregate, number, EntityId<numbe
   }
 }
 
-class TestEvent extends DomainEvent<number> {
+class TestEvent extends DomainEvent<TestAggregate> {
   static EVENT_NAME = 'TestEvent';
-
-  toPrimitives() {
-    return {};
-  }
 }
 
 class TestSubscriber implements DomainEventSubscriber {

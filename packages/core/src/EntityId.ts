@@ -1,13 +1,14 @@
 import createUUID from 'uuid-by-string'
 import { createId } from '@paralleldrive/cuid2'
 import Hashids from 'hashids';
+import {HashError} from "./error/HashError";
 
 export class EntityId<T> {
   protected _recordId: T|null = null;
   protected _uuid: string = null;
 
-  constructor(recordId: T = null, isHash:boolean = false, uuid: string = null) {
-    this._recordId = recordId ? recordId : null;
+  constructor(recordId: T|string = null, isHash:boolean = false, uuid: string = null) {
+    this._recordId = recordId ? recordId as T : null;
     if (isHash) {
       this.fromHash(recordId as string);
     }
@@ -32,9 +33,15 @@ export class EntityId<T> {
     return hashids.encode(this.toPrimitive().toString());
   }
 
-  fromHash(hash: string) : EntityId<T> {
+  protected fromHash(hash: string) : EntityId<T> {
+    if (!hash) {
+      return this;
+    }
     const hashids = new Hashids(...this.hashOptions);
     const num = hashids.decode(hash)[0];
+    if (!num) {
+      throw new HashError(`Invalid hash ${hash}`);
+    }
     this._recordId = <T>(typeof this._recordId === 'string' ? num.toString() : num);
     this.createUUID();
     return this;

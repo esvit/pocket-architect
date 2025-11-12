@@ -1,25 +1,25 @@
 import {EntityId} from "./EntityId";
-import {AnyAggregateRoot} from "./AggregateRoot";
 
 export abstract class DomainEvent<H> {
   static EVENT_NAME: string;
 
-  readonly aggregate: AnyAggregateRoot<H>;
-  readonly aggregateId: H;
-  readonly eventId: EntityId<H>;
+  readonly props: H;
+  readonly eventId: EntityId<never>;
   readonly occurredOn: Date;
   readonly eventName: string;
 
-  constructor(aggregate: AnyAggregateRoot<H>, eventId?: EntityId<H>, occurredOn?: Date) {
+  constructor(props: H, eventId?: EntityId<never>, occurredOn?: Date) {
+    this.props = props;
+
     const event = <typeof DomainEvent>this.constructor;
-    this.eventName = event.EVENT_NAME;
-    this.eventId = eventId || new EntityId<H>();
-    this.aggregate = aggregate;
-    this.aggregateId = aggregate.id;
+    this.eventName = event.EVENT_NAME ?? this.constructor.name;
+    this.eventId = eventId || new EntityId<never>();
     this.occurredOn = occurredOn || new Date();
   }
 
-  abstract toPrimitives(): DomainEventAttributes;
+  toPrimitives(): H {
+    return this.props;
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,6 +27,3 @@ export type AnyDomainEvent = DomainEvent<any>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DomainEventClass = typeof DomainEvent<any>;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type DomainEventAttributes = any;
