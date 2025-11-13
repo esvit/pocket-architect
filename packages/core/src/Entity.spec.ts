@@ -3,6 +3,7 @@ import { EntityId } from './EntityId';
 
 interface TestProps {
   name: string;
+  testId?: EntityId<string>;
 }
 class TestEntity extends Entity<TestProps, string, EntityId<string>> {
   static create(props: TestProps, id?:EntityId<string>|string): TestEntity {
@@ -12,13 +13,17 @@ class TestEntity extends Entity<TestProps, string, EntityId<string>> {
   set name(name: string) {
     this.props.name = name;
   }
+
+  set testId(val: EntityId<string>) {
+    this.props.testId = val;
+  }
 }
 
 describe('Entity', () => {
   let entity: TestEntity;
 
   beforeAll(() => {
-    entity = TestEntity.create({ name: 'test' }, '1');
+    entity = TestEntity.create({ name: 'test', testId: new EntityId('1') }, '1');
   });
 
   test('base', async () => {
@@ -41,7 +46,7 @@ describe('Entity', () => {
 
   test('snapshot', async () => {
     const snapshot = entity.snapshot();
-    expect(snapshot).toEqual({ name: 'test' });
+    expect(snapshot).toEqual({ name: 'test', testId: new EntityId('1') });
 
     expect(() => {
       snapshot.name = 'changed';

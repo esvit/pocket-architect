@@ -70,7 +70,13 @@ export abstract class Entity<T, E, H extends EntityId<E>> {
     return this.props
   }
 
-  toJSON(): T {
-    return this.toPrimitive()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  toJSON(): any {
+    return this.toPrimitive();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  toSnapshot(): any {
+    return this.toPrimitive();
   }
 }
