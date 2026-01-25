@@ -35,8 +35,9 @@ export class InMemoryEventBus implements EventBus {
     return this._emitter.listenerCount(event);
   }
 
-  addSubscribers(subscribers: DomainEventSubscriber[]): void {
-    for (const subscriber of subscribers) {
+  addSubscribers(subscribers: DomainEventSubscriber[] | DomainEventSubscriber): void {
+    const subsArray = Array.isArray(subscribers) ? subscribers : [subscribers];
+    for (const subscriber of subsArray) {
       const events = subscriber.subscribedTo();
       for (const event of events) {
         this._emitter.on(event.EVENT_NAME ?? event.name, subscriber.on.bind(subscriber));

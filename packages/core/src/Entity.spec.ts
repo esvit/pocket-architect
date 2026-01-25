@@ -46,7 +46,7 @@ describe('Entity', () => {
 
   test('snapshot', async () => {
     const snapshot = entity.snapshot();
-    expect(snapshot).toEqual({ name: 'test', testId: new EntityId('1') });
+    expect(snapshot).toEqual({ name: 'test', testId: '3D4WX' });
 
     expect(() => {
       snapshot.name = 'changed';

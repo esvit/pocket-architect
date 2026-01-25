@@ -55,6 +55,10 @@ export class EntityId<T> {
     return this._uuid;
   }
 
+  toJSON(): string {
+    return this.toHash();
+  }
+
   equals(id: EntityId<T>): boolean {
     return this._uuid === id._uuid;
   }

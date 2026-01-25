@@ -1,4 +1,5 @@
 import { EntityId } from './EntityId';
+import {createSnapshot} from "./helpers";
 
 const isEntity = <T, E, M extends EntityId<E>>(v: Entity<T, E, M>): v is Entity<T, E, M> => {
   return v instanceof Entity
@@ -22,8 +23,9 @@ export abstract class Entity<T, E, H extends EntityId<E>> {
     }
     const diffs: Partial<T> = {};
     const copy = JSON.parse(this._snapshot);
+    const snapshotObj = createSnapshot(this.props);
     for (const key in this.props) {
-      if (JSON.stringify(this.props[key]) !== JSON.stringify(copy[key])) {
+      if (JSON.stringify(snapshotObj[key]) !== JSON.stringify(copy[key])) {
         diffs[key] = this.props[key];
       }
     }
@@ -34,7 +36,7 @@ export abstract class Entity<T, E, H extends EntityId<E>> {
     if (!this._snapshot) {
       return false;
     }
-    return this._snapshot !== JSON.stringify(this.props);
+    return this._snapshot !== JSON.stringify(createSnapshot(this.props));
   }
 
   protected constructor(props: T, id?: H|E) {

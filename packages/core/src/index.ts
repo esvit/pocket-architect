@@ -6,6 +6,10 @@ import { HashError } from './error/HashError';
 import { DomainEvent } from './DomainEvent';
 import { DomainEventSubscriber } from './DomainEventSubscriber';
 import { EventBus } from './EventBus';
+import { Eventable } from './mixins/Eventable';
+import { Application } from './application/Application';
+import { ApplicationModule } from './application/ApplicationModule';
+import { bootstrap } from './bootstrap';
 
 export {
   Entity,
@@ -15,5 +19,11 @@ export {
   HashError,
   DomainEvent,
   DomainEventSubscriber,
-  EventBus
+  EventBus,
+  Eventable,
+
+  Application,
+  ApplicationModule,
+
+  bootstrap
 }

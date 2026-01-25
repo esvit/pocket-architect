@@ -10,6 +10,13 @@ export function createSnapshot<T>(obj: T): T {
     // @ts-ignore
     return obj.toSnapshot() as T;
   }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  if (typeof obj.toJSON === 'function') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return obj.toJSON() as T;
+  }
   const copy:T = {} as T;
   for (const key in obj) {
     if (!Object.prototype.hasOwnProperty.call(obj, key)) {

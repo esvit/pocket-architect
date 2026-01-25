@@ -42,12 +42,15 @@ describe('helpers', () => {
       id: new EntityId<string>('1'),
     };
     const snapshot = createSnapshot(original);
-    expect(snapshot).toEqual(original);
+    expect(snapshot).toEqual({
+      ...original,
+      id: '3D4WX'
+    });
     expect(snapshot).not.toBe(original);
     expect(snapshot.c).not.toBe(original.c);
     expect(snapshot.c.f).not.toBe(original.c.f);
     expect(snapshot.id).not.toBe(original.id);
-    expect(snapshot.id).toEqual(new EntityId<string>('1'));
+    expect(snapshot.id).toEqual('3D4WX');
 
     const item = TestEntity.create({
       name: 'test',
