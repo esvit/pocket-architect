@@ -71,7 +71,7 @@ async function bootstrap(app: Application, { appFolder, domainsFolder, infraFold
     throw err;
   }
 
-  function warmupSingletons(container: any) {
+  function warmupSingletons(container: AwilixContainer) {
     const regs = container.registrations ?? {};
     const names = Object.keys(regs);
 

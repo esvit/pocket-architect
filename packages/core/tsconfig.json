@@ -26,5 +26,5 @@
     "experimentalDecorators": true,
     "skipLibCheck": true
   },
-  "include": ["**/*", "__tests__/**/*"]
+  "include": ["src/**/*", "__tests__/**/*"]
 }
