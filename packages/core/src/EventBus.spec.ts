@@ -3,6 +3,7 @@ import {DomainEventSubscriber} from "./DomainEventSubscriber";
 import {DomainEvent, DomainEventClass} from "./DomainEvent";
 import {EntityId} from "./EntityId";
 import {Entity} from "./Entity";
+import {DiffFormatterOptions} from "./helpers/diff";
 
 describe('EventBus', () => {
   class NewUserCreated extends DomainEvent<{ username: string }> {
@@ -57,13 +58,25 @@ describe('EventBus', () => {
       get username(): string {
         return this.props.username;
       }
+
+      toDiff(): DiffFormatterOptions | null {
+        return {
+          resolveLabel({ key }) {
+            return key;
+          },
+          formatValue(value) {
+            return value?.toString();
+          },
+        };
+      }
     }
 
-    class UserCreatedEvent extends DomainEvent<Partial<IUser>> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    class UserCreatedEvent extends DomainEvent<{ diff: any }> {
       readonly eventName = 'UserCreatedEvent'; // без цього не буде працювати статична типізація
 
-      get username() {
-        return this.props.username;
+      get diff() {
+        return this.props.diff;
       }
     }
 
@@ -75,7 +88,18 @@ describe('EventBus', () => {
 
       // Реалізуємо логіку обробки подій
       async on(domainEvent: UserCreatedEvent) {
-        console.log('Username changed:', domainEvent.username);
+        expect(domainEvent.diff).toEqual([
+          {
+            kind: 'changed',
+            label: 'username',
+            path: 'username',
+            index: null,
+            beforeRaw: 'john_doe',
+            afterRaw: 'john_doe_updated',
+            before: 'john_doe',
+            after: 'john_doe_updated'
+          }
+        ]);
       }
     }
 
@@ -91,11 +115,12 @@ describe('EventBus', () => {
     // Змінюємо ім'я користувача
     user.username = 'john_doe_updated';
     let event;
+    expect(user.isDirty()).toBeTruthy();
     // Перевіряємо, чи є зміни
     if (user.isDirty()) {
       const diff = user.snapshotDiff();
       if (diff) {
-        event = new UserCreatedEvent(diff);
+        event = new UserCreatedEvent({ diff });
         // записуємо подію в чергу (не publish). Бо якщо в циклі може бути багато подій і їх треба назбирати, а потім виконати, тому збираємо через push
         eventBus.push(event);
       }

@@ -1,32 +1,39 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createSnapshot<T>(obj: T): T {
-  if (!obj) {
+  if (obj === null || obj === undefined) {
     return obj;
   }
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (typeof obj.toSnapshot === 'function') {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return obj.toSnapshot() as T;
+
+  // toSnapshot має найвищий пріоритет
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof (obj as any).toSnapshot === 'function') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (obj as any).toSnapshot();
   }
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (typeof obj.toJSON === 'function') {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return obj.toJSON() as T;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof (obj as any).toJSON === 'function') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (obj as any).toJSON();
   }
-  const copy:T = {} as T;
-  for (const key in obj) {
-    if (!Object.prototype.hasOwnProperty.call(obj, key)) {
-      continue;
-    }
-    if (typeof obj[key] !== 'object') {
-      copy[key] = obj[key];
-      continue;
-    }
-    copy[key] = createSnapshot(obj[key]);
+
+  // ✅ МАСИВИ
+  if (Array.isArray(obj)) {
+    return obj.map(item => createSnapshot(item)) as unknown as T;
   }
-  return copy;
+
+  // primitives
+  if (typeof obj !== 'object') {
+    return obj;
+  }
+
+  // plain object
+  const copy = {} as Record<string, unknown>;
+
+  for (const key of Object.keys(obj as object)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const value = (obj as any)[key];
+    copy[key] = createSnapshot(value);
+  }
+
+  return copy as T;
 }

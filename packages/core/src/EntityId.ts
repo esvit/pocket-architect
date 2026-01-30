@@ -56,7 +56,7 @@ export class EntityId<T> {
   }
 
   toJSON(): string {
-    return this.toHash();
+    return this._recordId ? this.toHash() : null;
   }
 
   equals(id: EntityId<T>): boolean {

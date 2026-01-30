@@ -1,5 +1,6 @@
 import { EntityId } from './EntityId';
 import {createSnapshot} from "./helpers";
+import {buildDiffViewModel, DiffFormatterOptions, diffObjects, DiffViewModel} from "./helpers/diff";
 
 const isEntity = <T, E, M extends EntityId<E>>(v: Entity<T, E, M>): v is Entity<T, E, M> => {
   return v instanceof Entity
@@ -10,26 +11,37 @@ export abstract class Entity<T, E, H extends EntityId<E>> {
   protected props: T;
   protected _snapshot: string;
 
+
   snapshot(): T {
-    this._snapshot = JSON.stringify(this.props);
+// важливо: snapshot має бути стабільним (createSnapshot)
+    const snapObj = createSnapshot(this.props);
+    this._snapshot = JSON.stringify(snapObj);
+
     const copy = JSON.parse(this._snapshot) as T;
     Object.freeze(copy);
     return copy;
   }
 
-  snapshotDiff(): Partial<T> | null {
-    if (!this._snapshot) {
-      return null;
-    }
-    const diffs: Partial<T> = {};
-    const copy = JSON.parse(this._snapshot);
-    const snapshotObj = createSnapshot(this.props);
-    for (const key in this.props) {
-      if (JSON.stringify(snapshotObj[key]) !== JSON.stringify(copy[key])) {
-        diffs[key] = this.props[key];
-      }
-    }
-    return Object.keys(diffs).length > 0 ? diffs : null;
+
+  /**
+   * Повертає diff у вигляді масиву обʼєктів (DiffViewModel),
+   * АЛЕ лише якщо Entity перевизначив toDiff().
+   *
+   * За замовчуванням toDiff() = null → snapshotDiff() = null.
+   */
+  snapshotDiff(): DiffViewModel[] | null {
+    if (!this._snapshot) return null;
+
+    const diffOptions = this.toDiff();
+    if (!diffOptions) return null;
+
+    const beforeObj = JSON.parse(this._snapshot) as unknown;
+    const afterObj = createSnapshot(this.props);
+
+    const diffs = diffObjects(beforeObj, afterObj);
+    if (diffs.length === 0) return [];
+
+    return buildDiffViewModel(diffs, diffOptions);
   }
 
   isDirty(): boolean {
@@ -80,5 +92,9 @@ export abstract class Entity<T, E, H extends EntityId<E>> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   toSnapshot(): any {
     return this.toPrimitive();
+  }
+
+  toDiff(): DiffFormatterOptions | null {
+    return null;
   }
 }
